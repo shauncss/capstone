@@ -1,0 +1,24 @@
+.display-hero {
+  display: grid;
+  gap: 1rem;
+}
+
+.display-hero .current-patient {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--card-shadow), 0 0 0 2px rgba(124, 58, 237, 0.25);
+}
+
+.display-hero .upcoming ul li {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.display-hero .upcoming ul li.is-highlighted {
+  background: rgba(252, 211, 77, 0.08);
+  border-color: rgba(252, 211, 77, 0.4);
+  box-shadow: 0 8px 24px rgba(252, 211, 77, 0.2);
+}
+
+.display-hero .badge {
+  background: rgba(255, 255, 255, 0.12);
+}

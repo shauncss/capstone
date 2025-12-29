@@ -1,0 +1,13 @@
+# Core GUI + inference stack
+ultralytics>=8.2.0
+opencv-python>=4.9.0
+numpy>=1.26.0
+pillow>=10.0.0
+qrcode>=7.4.2
+
+# Raspberry Pi sensor libraries
+adafruit-blinka>=8.15.0
+adafruit-circuitpython-mlx90614>=3.4.9
+
+# picamera2 is typically installed via apt (python3-picamera2)
+# torch / torchvision may need platform-specific wheels prior to installing ultralytics

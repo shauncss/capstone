@@ -1,0 +1,97 @@
+ .admin-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(6, 182, 212, 0.18));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--card-shadow);
+  isolation: isolate;
+}
+
+.admin-hero .admin-floating-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 26px 26px;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  mask-image: radial-gradient(65% 65% at 50% 50%, rgba(255, 255, 255, 0.65), transparent);
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 0;
+}
+
+.admin-hero h2 {
+  margin: 0.25rem 0 0.25rem;
+  font-size: 2.1rem;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-hero p {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-pill-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.admin-pills .badge {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-grid-lux {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.admin-card-lux {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: var(--card-shadow);
+  border-radius: 1.1rem;
+}
+
+.admin-card-lux.success::after,
+.admin-card-lux.warning::after,
+.admin-card-lux.info::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
+}
+
+.admin-card-lux.success::after {
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.45), 0 12px 30px rgba(52, 211, 153, 0.2);
+}
+
+.admin-card-lux.warning::after {
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.5), 0 12px 30px rgba(248, 113, 113, 0.2);
+}
+
+.admin-card-lux.info::after {
+  box-shadow: 0 0 0 2px rgba(252, 211, 77, 0.5), 0 12px 30px rgba(252, 211, 77, 0.18);
+}
+
+.admin-card-lux .admin-shimmer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 60% at 30% 20%, rgba(255, 255, 255, 0.08), transparent);
+  pointer-events: none;
+}
+
+.admin-card-lux h2 {
+  margin: 0.35rem 0 0;
+}
