@@ -1,16 +1,1 @@
-# Python Environment
 venv/
-.env/
-__pycache__/
-*.pyc
-
-# YOLO Datasets (The biggest file savers)
-datasets/
-data/*.zip
-data/*.tar.gz
-
-# Weights and Large Models (Crucial)
-*.pt
-*.onnx
-*.weights
-runs/
