@@ -1,5 +1,6 @@
 @echo off
 
+REM Start the system
 :START
 cls
 echo ========================================
@@ -7,7 +8,6 @@ echo        CLINIC KIOSK DEV RUNNER
 echo ========================================
 echo.
 
-REM --- CLEANUP ---
 REM Kill previous node processes 
 taskkill /F /IM node.exe >nul 2>&1
 
@@ -34,15 +34,19 @@ echo.
 echo ========================================================
 echo   System Running...
 echo.
-echo   To RESTART: Press [R]
-echo   To QUIT:    Press [Q]
+echo   To RESTART: Press [R] then press [Enter]
+echo   To QUIT:    Press [Q] then press [Enter]
 echo ========================================================
 
-choice /C RQ /N /M "Select Option:"
+REM Go to Quit or Start based on user's input
+:PROMPT
+set "OPT="
+set /p "OPT=Select Option (R=Restart, Q=Quit): "
+if /i "%OPT%"=="Q" goto QUIT
+if /i "%OPT%"=="R" goto START
+goto PROMPT
 
-if errorlevel 2 goto QUIT
-if errorlevel 1 goto START
-
+REM Quit the system
 :QUIT
 echo.
 echo Closing...
