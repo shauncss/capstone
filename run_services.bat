@@ -1,26 +1,50 @@
 @echo off
-REM Single-window dev runner: starts backend and frontend, opens browser to localhost.
+
+:START
+cls
+echo ========================================
+echo        CLINIC KIOSK DEV RUNNER
+echo ========================================
+echo.
+
+REM --- CLEANUP ---
+REM Kill previous node processes 
+taskkill /F /IM node.exe >nul 2>&1
 
 cd /d "%~dp0"
-
 set BACKEND_DIR=%~dp0Backend
 set FRONTEND_DIR=%~dp0Frontend
 set BACKEND_PORT=5000
 set FRONTEND_PORT=5173
 
-echo Starting backend (PORT=%BACKEND_PORT%)...
-start /b cmd /c "cd /d "%BACKEND_DIR%" && set PORT=%BACKEND_PORT% && npm run dev"
+REM Run Backend
+echo [1/3] Starting Backend...
+start /b cmd /c "cd /d "%BACKEND_DIR%" && set PORT=%BACKEND_PORT% && npm run dev <nul >nul 2>&1"
 
-REM Small delay so backend boot logs don't mix with frontend start
-ping -n 2 127.0.0.1 >nul
+REM Run Frontend
+echo [2/3] Starting Frontend (Background)...
+start /b cmd /c "cd /d "%FRONTEND_DIR%" && set PORT=%FRONTEND_PORT% && npm run dev -- --host <nul >nul 2>&1"
 
-echo Starting frontend (PORT=%FRONTEND_PORT%)...
-start /b cmd /c "cd /d "%FRONTEND_DIR%" && set PORT=%FRONTEND_PORT% && npm run dev -- --host"
-
-REM Give Vite a moment, then open browser
+REM Wait a moment then open browser
 ping -n 3 127.0.0.1 >nul
+echo [3/3] Opening Browser...
 start "" http://localhost:%FRONTEND_PORT%/?dev=1
 
-echo Both servers started in this window. Press Ctrl+C to stop.
-pause
-exit /b 0
+echo.
+echo ========================================================
+echo   System Running...
+echo.
+echo   To RESTART: Press [R]
+echo   To QUIT:    Press [Q]
+echo ========================================================
+
+choice /C RQ /N /M "Select Option:"
+
+if errorlevel 2 goto QUIT
+if errorlevel 1 goto START
+
+:QUIT
+echo.
+echo Closing...
+taskkill /F /IM node.exe >nul 2>&1
+exit
