@@ -6,13 +6,13 @@
 #include <hd44780ioClass/hd44780_I2Cexp.h>
 
 // --- WiFi and Backend Config ---
-const char* WIFI_SSID       = "Mechacy_2.4GHz";
-const char* WIFI_PASSWORD   = "Pijoy@IP1";
-const char* BACKEND_HOST_IP = "192.168.0.103"; // CORRECTED IP
+const char* WIFI_SSID       = "Mechacy_2.4GHz";  // change to cuurent wifi name
+const char* WIFI_PASSWORD   = "Pijoy@IP1";  // change to current wifi pw
+const char* BACKEND_HOST_IP = "192.168.0.103";  // change to current IPv4
 const int BACKEND_PORT      = 5000;
 
-const char* CONSULT_URL  = "http://192.168.0.103:5000/api/queue/current";
-const char* PHARMACY_URL = "http://192.168.0.103:5000/api/pharmacy/queue";
+const char* CONSULT_URL  = "http://192.168.0.103:5000/api/queue/current";  // change to current IPv4
+const char* PHARMACY_URL = "http://192.168.0.103:5000/api/pharmacy/queue";  // change to current IPv4
 
 // --- I2C/LCD Config ---
 #define I2C_SDA_PIN 21
