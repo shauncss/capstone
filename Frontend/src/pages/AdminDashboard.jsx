@@ -3,6 +3,7 @@ import useSocket from '../hooks/useSocket';
 import QueueTable from '../components/QueueTable';
 import RoomsPanel from '../components/RoomsPanel';
 import PatientHistory from '../components/PatientHistory';
+import PaymentQueuePanel from '../components/PaymentQueuePanel';
 import PharmacyQueuePanel from '../components/PharmacyQueuePanel';
 import '../styles/admin.css';
 import {
@@ -13,7 +14,10 @@ import {
   fetchQueue,
   fetchRooms,
   finishRoom,
-  fetchPharmacyQueue,
+  fetchPaymentQueue,
+  callNextPaymentPatient,
+  completePaymentPatient,
+  fetchPharmacyQueue, 
   callNextPharmacyPatient,
   completePharmacyPatient
 } from '../services/api';
@@ -42,6 +46,11 @@ function AdminDashboard() {
   const [historyPage, setHistoryPage] = useState(1);
   const [historyHasMore, setHistoryHasMore] = useState(false);
 
+  // Payment states
+  const [paymentQueue, setPaymentQueue] = useState([]);
+  const [callingPaymentNext, setCallingPaymentNext] = useState(false);
+  const [completingPaymentId, setCompletingPaymentId] = useState(null);
+
   // Pharmacy states
   const [pharmacyQueue, setPharmacyQueue] = useState([]);
   const [callingPharmacyNext, setCallingPharmacyNext] = useState(false);
@@ -51,12 +60,13 @@ function AdminDashboard() {
     async function bootstrap() {
       setLoading(true);
       try {
-        const [queueRes, roomsRes, etaRes, historyRes, pharmacyRes] = await Promise.all([
+        const [queueRes, roomsRes, etaRes, historyRes, pharmacyRes, paymentRes] = await Promise.all([
           fetchQueue(),
           fetchRooms(),
           fetchEta(),
           fetchHistory({ limit: HISTORY_LIMIT, page: 1 }),
-          fetchPharmacyQueue()
+          fetchPharmacyQueue(),
+          fetchPaymentQueue()
         ]);
         setQueue(queueRes.data.queue);
         setRooms(roomsRes.data.rooms);
@@ -64,6 +74,7 @@ function AdminDashboard() {
         setHistory(historyRes.data.history || []);
         setHistoryPage(historyRes.data.pagination?.page || 1);
         setHistoryHasMore(Boolean(historyRes.data.pagination?.hasMore));
+        setPaymentQueue(paymentRes.data.queue || []);
         setPharmacyQueue(pharmacyRes.data.queue || []);
       } catch (err) {
         setError('Unable to load initial data');
@@ -309,12 +320,13 @@ function AdminDashboard() {
 
       {/* 2. PAYMENT PAGE */}
       {activeTab === 'payment' && (
-        <div className="card">
-          <h3>Payment</h3>
-          <p style={{ color: '#94a3b8', padding: '2rem 0', textAlign: 'center' }}>
-            Payment module is currently empty.
-          </p>
-        </div>
+        <PaymentQueuePanel
+          queue={paymentQueue}
+          onCallNext={handleCallNextPayment}
+          onComplete={handleCompletePayment}
+          callingNext={callingPaymentNext}
+          completingId={completingPaymentId}
+        />
       )}
 
       {/* 3. PHARMACY PAGE */}

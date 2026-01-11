@@ -1,6 +1,6 @@
 import React from 'react';
 
-function PharmacyQueuePanel({
+function PaymentQueuePanel({
   queue = [],
   onCallNext,
   onComplete,
@@ -11,15 +11,14 @@ function PharmacyQueuePanel({
   const waitingQueue = queue.filter((entry) => entry.status === 'waiting');
 
   return (
-    <div className="card pharmacy-card">
+    <div className="card payment-card">
       <div className="card-header">
         <div>
-          <h3>Pharmacy Queue</h3>
-          <p className="muted">Medication handover.</p>
+          <h3>Payment Queue</h3>
+          <p className="muted">Process payments before pharmacy.</p>
         </div>
       </div>
 
-      {/*NOW SERVING BOX*/}
       <div className="admin-card-lux info" style={{ padding: '1.5rem', margin: '1rem 0', textAlign: 'center' }}>
         <p className="helper-text" style={{ marginBottom: '0.5rem' }}>NOW SERVING</p>
         
@@ -31,10 +30,10 @@ function PharmacyQueuePanel({
             <button 
               className="success"
               style={{ width: '100%', maxWidth: '200px' }}
-              onClick={() => onComplete(currentServing.pharmacy_id)}
-              disabled={completingId === currentServing.pharmacy_id}
+              onClick={() => onComplete(currentServing.payment_id)}
+              disabled={completingId === currentServing.payment_id}
             >
-              {completingId === currentServing.pharmacy_id ? 'Completing...' : 'Done'}
+              {completingId === currentServing.payment_id ? 'Completing...' : 'Done'}
             </button>
           </>
         ) : (
@@ -53,7 +52,6 @@ function PharmacyQueuePanel({
         )}
       </div>
 
-      {/*QUEUE TABLE*/}
       <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Waiting List ({waitingQueue.length})</h4>
       <table className="data-table">
         <thead>
@@ -70,7 +68,7 @@ function PharmacyQueuePanel({
             </tr>
           )}
           {waitingQueue.map((entry) => (
-            <tr key={entry.pharmacy_id}>
+            <tr key={entry.payment_id}>
               <td>{entry.queue_number}</td>
               <td>{entry.first_name} {entry.last_name}</td>
               <td>
@@ -84,4 +82,4 @@ function PharmacyQueuePanel({
   );
 }
 
-export default PharmacyQueuePanel;
+export default PaymentQueuePanel;

@@ -55,6 +55,9 @@ export const updateRoom = (roomId, payload) => api.patch(`/rooms/${roomId}`, pay
 export const deleteRoom = (roomId) => api.delete(`/rooms/${roomId}`);
 export const fetchHistory = (params) => api.get('/queue/history', { params });
 export const sendHeartbeat = (payload) => api.post('/pi/heartbeat', payload);
+export const fetchPaymentQueue = () => api.get('/payment/queue');
+export const callNextPaymentPatient = () => api.post('/payment/call-next');
+export const completePaymentPatient = (payload) => api.post('/payment/complete', payload);
 export const fetchPharmacyQueue = () => api.get('/pharmacy/queue');
 export const callNextPharmacyPatient = () => api.post('/pharmacy/call-next');
 export const completePharmacyPatient = (payload) => api.post('/pharmacy/complete', payload);

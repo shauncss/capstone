@@ -10,6 +10,7 @@ const patientRoutes = require('./routes/patientRoutes');
 const queueRoutes = require('./routes/queueRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const sensorRoutes = require('./routes/sensorRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const pharmacyRoutes = require('./routes/pharmacyRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const registerSocket = require('./sockets');
@@ -95,6 +96,7 @@ app.use('/api', patientRoutes);
 app.use('/api', queueRoutes);
 app.use('/api', roomRoutes);
 app.use('/api', sensorRoutes);
+app.use('/api', paymentRoutes);
 app.use('/api', pharmacyRoutes);
 app.use('/api', adminRoutes);
 

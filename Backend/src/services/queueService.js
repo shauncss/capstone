@@ -4,7 +4,7 @@ const roomModel = require('../models/roomModel');
 const { calculateEta } = require('../utils/etaCalculator');
 const { generateNextQueueNumber } = require('../utils/queueNumber'); 
 const socketService = require('./socketService');
-const pharmacyService = require('./pharmacyService');
+const paymentService = require('./paymentService');
 
 async function broadcastQueue() {
   const queue = await queueModel.getCurrentQueueSnapshot();
@@ -109,7 +109,7 @@ async function finishRoom(roomId) {
     if (activeQueue.patient_id) {
       await patientModel.updatePatient(activeQueue.patient_id, { room_id: null });
     }
-    await pharmacyService.enqueueFromQueueRecord(completed);
+    await paymentService.enqueueFromQueueRecord(completed);
   }
 
   const room = await roomModel.updateRoom(roomId, {
