@@ -1,24 +1,10 @@
 const roomModel = require('../models/roomModel');
 const queueService = require('../services/queueService');
 
-async function getRooms(req, res, next) {
+async function getRooms(_req, res, next) {
   try {
     const rooms = await roomModel.getRooms();
     return res.json({ rooms });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function addRoom(req, res, next) {
-  try {
-    const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: 'name is required' });
-    }
-    const room = await roomModel.addRoom({ name });
-    await queueService.broadcastRooms();
-    return res.status(201).json({ room });
   } catch (error) {
     next(error);
   }
@@ -50,7 +36,7 @@ async function finishRoom(req, res, next) {
   }
 }
 
-async function autoAssign(req, res, next) {
+async function autoAssign(_req, res, next) {
   try {
     const result = await queueService.autoAssignNextAvailable();
     return res.json(result);
@@ -80,30 +66,10 @@ async function updateRoomDetails(req, res, next) {
   }
 }
 
-async function removeRoom(req, res, next) {
-  try {
-    const { id } = req.params;
-    const room = await roomModel.getRoomById(id);
-    if (!room) {
-      return res.status(404).json({ message: 'Room not found' });
-    }
-    if (!room.is_available) {
-      return res.status(409).json({ message: 'Cannot delete a room that is in use' });
-    }
-    await roomModel.deleteRoom(id);
-    await queueService.broadcastRooms();
-    return res.status(204).send();
-  } catch (error) {
-    next(error);
-  }
-}
-
 module.exports = {
   getRooms,
-  addRoom,
   assignRoom,
   finishRoom,
   autoAssign,
-  updateRoomDetails,
-  removeRoom
+  updateRoomDetails
 };

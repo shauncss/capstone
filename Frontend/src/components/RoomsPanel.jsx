@@ -2,20 +2,17 @@ import { useState } from 'react';
 
 function RoomsPanel({
   rooms = [],
-  waitingQueue = [],
+  queue = [],
   onFinishRoom,
   finishingRoomId,
   onAssignRoom,
   assigningRoomId,
-  onRenameRoom,
-  updatingRoomId,
-  onDeleteRoom,
-  deletingRoomId
 }) {
   const [editingRoomId, setEditingRoomId] = useState(null);
   const [draftNames, setDraftNames] = useState({});
   const [roomSelections, setRoomSelections] = useState({});
 
+  const waitingQueue = queue.filter(q => q.status === 'waiting');
   const availableRooms = rooms.filter((room) => room.is_available).length;
   const busyRooms = rooms.length - availableRooms;
   const hasWaiting = waitingQueue.length > 0;
@@ -62,48 +59,45 @@ function RoomsPanel({
         </div>
       </div>
       {rooms.length === 0 ? (
-        <p>No rooms configured yet.</p>
+        <p>No rooms configured.</p>
       ) : (
         <div className="room-grid interactive-grid">
           {rooms.map((room) => {
             const isFinishing = finishingRoomId === room.id;
             const isAssigning = assigningRoomId === room.id;
-            const isUpdating = updatingRoomId === room.id;
-            const isDeleting = deletingRoomId === room.id;
-            const isEditing = editingRoomId === room.id;
+
+            // Find the patient currently inside this room
+            const currentPatient = queue.find(
+              (q) => q.assigned_room_id === room.id && q.status === 'called'
+            );
 
             return (
               <div className={`room-tile interactive ${room.is_available ? 'available' : 'busy'}`} key={room.id}>
                 <div className="room-tile-header">
-                  {isEditing ? (
-                    <input
-                      value={draftNames[room.id] || ''}
-                      onChange={(event) => setDraftNames((prev) => ({ ...prev, [room.id]: event.target.value }))}
-                      className="room-edit-input"
-                      autoFocus
-                    />
-                  ) : (
-                    <p className="room-name">{room.name}</p>
-                  )}
+                  <p className="room-name">{room.name}</p>
                   <span className={`badge ${room.is_available ? 'success' : 'warning'}`}>
                     {room.is_available ? 'Available' : 'In consultation'}
                   </span>
                 </div>
+                
+                {/* Display Queue Number instead of Patient ID */}
                 <p className="room-status-line">
                   {room.is_available
                     ? 'Waiting for the next patient.'
-                    : `Serving patient ID ${room.current_patient_id ?? '—'}`}
+                    : `Serving: ${currentPatient ? currentPatient.queue_number : 'Unknown'}`}
                 </p>
 
                 <div className="room-actions">
                   {room.is_available ? (
                     hasWaiting ? (
                       <div className="assign-controls vertical">
+                        {/* CSS Class applied here */}
                         <select
+                          className="room-select"
                           value={roomSelections[room.id] || ''}
                           onChange={(event) => setRoomSelections((prev) => ({ ...prev, [room.id]: event.target.value }))}
                         >
-                          <option value="">Select patient</option>
+                          <option value="">Select patient...</option>
                           {waitingQueue.map((entry) => (
                             <option key={entry.queue_id} value={entry.queue_id}>
                               #{entry.queue_number} • {entry.first_name} {entry.last_name}
@@ -142,33 +136,8 @@ function RoomsPanel({
                     </button>
                   )}
                 </div>
-
-                <div className="room-actions secondary">
-                  {isEditing ? (
-                    <div className="room-edit-actions">
-                      <button type="button" onClick={() => handleSaveName(room.id)} disabled={isUpdating}>
-                        {isUpdating ? 'Saving…' : 'Save name'}
-                      </button>
-                      <button type="button" className="ghost-button" onClick={() => setEditingRoomId(null)}>
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="room-edit-actions">
-                      <button type="button" className="ghost-button" onClick={() => handleEditToggle(room)}>
-                        Edit name
-                      </button>
-                      <button
-                        type="button"
-                        className="ghost-button danger"
-                        onClick={() => onDeleteRoom?.(room.id)}
-                        disabled={!room.is_available || isDeleting}
-                      >
-                        {isDeleting ? 'Removing…' : 'Remove room'}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                
+                {/* Secondary Actions (Edit/Delete) Removed */}
               </div>
             );
           })}

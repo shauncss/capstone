@@ -8,7 +8,7 @@ function QueueTable({ queue = [], rooms = [], selection = {}, onSelectRoom, onAs
 
   return (
     <div className="card">
-      <h3>Queue</h3>
+      <h3>Consultation Queue</h3>
       <table className="data-table">
         <thead>
           <tr>
@@ -48,6 +48,8 @@ function QueueTable({ queue = [], rooms = [], selection = {}, onSelectRoom, onAs
                   ) : (
                     <div className="assign-controls">
                       <select
+                        className="room-select"
+                        style={{ minWidth: '140px' }}
                         value={selection[entry.queue_id] || ''}
                         onChange={(event) => onSelectRoom(entry.queue_id, event.target.value)}
                       >

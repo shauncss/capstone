@@ -240,7 +240,6 @@ function AdminDashboard() {
   const hasWaitingPatients = queue.some((entry) => entry.status === 'waiting');
   const hasAvailableRooms = rooms.some((room) => room.is_available);
   const autoAssignDisabled = !hasWaitingPatients || !hasAvailableRooms || autoAssigning;
-  const waitingQueue = queue.filter((entry) => entry.status === 'waiting');
 
   if (loading) {
     return <p className="helper-text">Booting the command deck…</p>;
@@ -262,29 +261,28 @@ function AdminDashboard() {
       <div className="admin-grid-lux">
         <div className="card stat admin-card-lux success">
           <div className="admin-shimmer" />
-          <p>Queue Length</p>
+          <p>Pharmacy Queue Length</p>
           <h2 style={{ margin: '0.35rem 0 0' }}>{queue.length}</h2>
-          <p className="helper-text">Waiting + called</p>
+          <p className="helper-text">Waiting + Called</p>
         </div>
         <div className="card stat admin-card-lux info">
           <div className="admin-shimmer" />
-          <p>ETA (new patient)</p>
+          <p>ETA for new patient</p>
           <h2 style={{ margin: '0.35rem 0 0' }}>{etaPreview?.etaMinutes ?? '—'} min</h2>
           <p className="helper-text">Based on current load</p>
         </div>
         <div className="card quick-actions admin-card-lux warning">
           <div className="admin-shimmer" />
           <div>
-            <h3>Quick Actions</h3>
-            <p className="helper-text">Match next waiting patient with the first available room.</p>
+            <b>Quick Actions</b>
           </div>
           <div className="action-buttons">
             <button type="button" onClick={handleAutoAssign} disabled={autoAssignDisabled}>
               {autoAssigning ? 'Auto assigning…' : 'Auto assign next patient'}
             </button>
-            <small className="helper-text">
-              Requires at least one waiting patient and an available room.
-            </small>
+            <p className="helper-text">
+              Auto assigns the next patient to an empty consultation room.
+            </p>
           </div>
         </div>
       </div>
@@ -297,15 +295,11 @@ function AdminDashboard() {
       />
       <RoomsPanel
         rooms={rooms}
-        waitingQueue={waitingQueue}
+        queue={queue}
         onFinishRoom={handleFinishRoom}
         finishingRoomId={finishingRoomId}
         onAssignRoom={handleAssignFromRoom}
         assigningRoomId={assigningRoomId}
-        onRenameRoom={handleRenameRoom}
-        updatingRoomId={updatingRoomId}
-        onDeleteRoom={handleDeleteRoom}
-        deletingRoomId={deletingRoomId}
       />
       <PharmacyQueuePanel
         queue={pharmacyQueue}
@@ -314,19 +308,6 @@ function AdminDashboard() {
         callingNext={callingPharmacyNext}
         completingId={completingPharmacyId}
       />
-      <div className="card">
-        <h3>Add Room</h3>
-        <form className="inline-form" onSubmit={handleAddRoom}>
-          <input
-            value={newRoom}
-            onChange={(event) => setNewRoom(event.target.value)}
-            placeholder="Room name"
-          />
-          <button type="submit" disabled={addingRoom}>
-            {addingRoom ? 'Saving…' : 'Add'}
-          </button>
-        </form>
-      </div>
       <PatientHistory
         history={history}
         loading={historyLoading}

@@ -331,13 +331,6 @@ button:disabled {
   align-items: center;
 }
 
-.assign-controls select {
-  min-width: 8rem;
-  padding: 0.4rem;
-  border-radius: 0.5rem;
-  border: 1px solid #d0d7e3;
-}
-
 .assign-controls.vertical {
   flex-direction: column;
   align-items: stretch;
@@ -450,7 +443,36 @@ button:disabled {
   border-radius: 0.4rem;
 }
 
+.room-select {
+  background-color: rgba(0, 0, 0, 0.2); 
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
 
+.room-select:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.room-select:focus {
+  border-color: var(--primary);
+  background-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.room-select option {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #e2e8f0;
+  padding: 12px;
+}
 
 .quick-actions {
   display: flex;
