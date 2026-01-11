@@ -62,6 +62,12 @@ async function getNextWaitingEntry() {
     .first();
 }
 
+async function getLastQueueEntry() {
+  return db('queue')
+    .orderBy('created_at', 'desc')
+    .first();
+}
+
 async function completeQueueEntry(queueId) {
   const [record] = await db('queue')
     .where({ id: queueId })
@@ -99,6 +105,7 @@ module.exports = {
   assignRoom,
   getActiveQueueByRoom,
   getNextWaitingEntry,
+  getLastQueueEntry,
   completeQueueEntry,
   getCompletedQueueHistory
 };

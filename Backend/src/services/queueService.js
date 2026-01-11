@@ -2,7 +2,7 @@ const patientModel = require('../models/patientModel');
 const queueModel = require('../models/queueModel');
 const roomModel = require('../models/roomModel');
 const { calculateEta } = require('../utils/etaCalculator');
-const { generateQueueNumber } = require('../utils/queueNumber');
+const { generateNextQueueNumber } = require('../utils/queueNumber'); 
 const socketService = require('./socketService');
 const pharmacyService = require('./pharmacyService');
 
@@ -32,8 +32,18 @@ async function handleCheckIn({
   const normalizedTemp = temp !== undefined && temp !== null && temp !== '' ? Number(temp) : null;
   const normalizedSpo2 = spo2 !== undefined && spo2 !== null && spo2 !== '' ? Number(spo2) : null;
   const normalizedHr = hr !== undefined && hr !== null && hr !== '' ? Number(hr) : null;
+  
   const queueLength = await queueModel.getQueueLength();
-  const queueNumber = generateQueueNumber();
+
+  // --- CHANGED LOGIC START ---
+  // 1. Get the last created queue entry from DB
+  const lastEntry = await queueModel.getLastQueueEntry();
+  // 2. Extract the number string (or null if DB is empty)
+  const lastQueueNumber = lastEntry ? lastEntry.queue_number : null;
+  // 3. Generate the next number
+  const queueNumber = generateNextQueueNumber(lastQueueNumber);
+  // --- CHANGED LOGIC END ---
+
   const etaMinutes = calculateEta(queueLength);
 
   const patient = await patientModel.createPatient({
