@@ -1,177 +1,131 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import useSocket from '../hooks/useSocket';
-import { fetchQueue, fetchPharmacyQueue } from '../services/api';
+import { fetchQueue, fetchPaymentQueue, fetchPharmacyQueue } from '../services/api';
 import '../styles/display.css';
 
 function DisplayBoard() {
   const socket = useSocket();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [queue, setQueue] = useState([]);
+  const [consultationQueue, setConsultationQueue] = useState([]);
+  const [paymentQueue, setPaymentQueue] = useState([]);
   const [pharmacyQueue, setPharmacyQueue] = useState([]);
   const [loading, setLoading] = useState(true);
-  const highlightedQueueNumber = location.state?.queueNumber || null;
 
+  // 1. Load Initial Data
   useEffect(() => {
-    let cancelled = false;
-    async function loadQueue() {
+    async function loadData() {
       try {
-        const [queueRes, pharmacyRes] = await Promise.all([fetchQueue(), fetchPharmacyQueue()]);
-        if (!cancelled) {
-          setQueue(queueRes.data.queue || []);
-          setPharmacyQueue(pharmacyRes.data.queue || []);
-        }
+        const [qRes, payRes, pharmRes] = await Promise.all([
+          fetchQueue(),
+          fetchPaymentQueue(),
+          fetchPharmacyQueue()
+        ]);
+        setConsultationQueue(qRes.data.queue || []);
+        setPaymentQueue(payRes.data.queue || []);
+        setPharmacyQueue(pharmRes.data.queue || []);
       } catch (err) {
-        if (!cancelled) {
-          setQueue([]);
-          setPharmacyQueue([]);
-        }
+        console.error("Failed to load display data", err);
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
+    loadData();
+  }, []);
 
-    loadQueue();
-    return () => {
-      cancelled = true;
+  // 2. Real-time Updates
+  useEffect(() => {
+    if (!socket) return;
+    const handleUpdate = (setter) => (data) => {
+      setter(data.queue ? data.queue : data);
     };
-  }, []);
+    socket.on('queue_update', handleUpdate(setConsultationQueue));
+    socket.on('payment_update', handleUpdate(setPaymentQueue));
+    socket.on('pharmacy_update', handleUpdate(setPharmacyQueue));
+    return () => {
+      socket.off('queue_update');
+      socket.off('payment_update');
+      socket.off('pharmacy_update');
+    };
+  }, [socket]);
 
-  const handleQueueUpdate = useCallback((payload) => {
-    if (Array.isArray(payload)) {
-      setQueue(payload);
-      return;
-    }
-    if (payload?.queue) {
-      setQueue(payload.queue);
-    }
-  }, []);
+  // 3. Filter Data
+  const servingRoom1 = consultationQueue.find(q => q.status === 'called' && q.assigned_room_id === 1);
+  const servingRoom2 = consultationQueue.find(q => q.status === 'called' && q.assigned_room_id === 2);
+  const servingPayment = paymentQueue.find(q => q.status === 'ready');
+  const servingPharmacy = pharmacyQueue.find(q => q.status === 'ready');
 
-  const handlePharmacyUpdate = useCallback((payload) => {
-    if (Array.isArray(payload)) {
-      setPharmacyQueue(payload);
-      return;
-    }
-    if (payload?.queue) {
-      setPharmacyQueue(payload.queue);
-    }
-  }, []);
+  const waitingConsultation = consultationQueue.filter(q => q.status === 'waiting');
+  const waitingPayment = paymentQueue.filter(q => q.status === 'waiting');
+  const waitingPharmacy = pharmacyQueue.filter(q => q.status === 'waiting');
 
-  useEffect(() => {
-    if (!socket) return undefined;
-    socket.on('queue_update', handleQueueUpdate);
-    socket.on('pharmacy_update', handlePharmacyUpdate);
-    return () => socket.off('queue_update', handleQueueUpdate);
-  }, [socket, handleQueueUpdate, handlePharmacyUpdate]);
-
-  useEffect(() => {
-    if (!highlightedQueueNumber) return undefined;
-    const timeout = setTimeout(() => {
-      navigate('.', { replace: true, state: {} });
-    }, 6500);
-    return () => clearTimeout(timeout);
-  }, [highlightedQueueNumber, navigate]);
-
-  const calledQueue = queue.filter((entry) => entry.status === 'called' && entry.room_name);
-  const currentCalled = calledQueue[0];
-  const upcoming = calledQueue.slice(1, 5);
-  const queueIsEmpty = calledQueue.length === 0;
-  const pharmacyReady = pharmacyQueue.filter((entry) => entry.status === 'ready');
-  const pharmacyWaiting = pharmacyQueue.filter((entry) => entry.status === 'waiting');
-  const pharmacyHighlight = pharmacyReady[0] || pharmacyWaiting[0];
-  const pharmacyList = pharmacyReady.slice(1).concat(pharmacyWaiting);
-  const pharmacyIsEmpty = pharmacyQueue.length === 0;
-
-  if (loading) {
-    return (
-      <section className="display-board">
-        <div className="card">
-          <p>Loading live queue…</p>
-        </div>
-      </section>
-    );
-  }
+  if (loading) return <div className="display-board"><p>Loading...</p></div>;
 
   return (
     <section className="display-board">
-      <div className={`card current-patient${highlightedQueueNumber && currentCalled?.queue_number === highlightedQueueNumber ? ' is-highlighted' : ''}`}>
-        <div className="current-header">
-          <p>Now Serving</p>
-          <span className="badge">Live</span>
+      
+      {/* 1. NOW SERVING CARD (Contains everything now) */}
+      <div className="now-serving-card">
+        <div className="card-header centered">
+          <h2>Now Serving</h2>
         </div>
-        <h1>{currentCalled?.queue_number || '—'}</h1>
-        <p className="current-name">
-          {currentCalled ? `${currentCalled.first_name} ${currentCalled.last_name}` : 'Waiting for next patient'}
-        </p>
-        {currentCalled?.room_name && <p className="current-room">Proceed to room {currentCalled.room_name}</p>}
-        {queueIsEmpty && <p className="helper-text">No patients waiting right now.</p>}
+        
+        <div className="serving-grid">
+          <ServingSlot label="Consultation Room 1" ticket={servingRoom1} />
+          <ServingSlot label="Consultation Room 2" ticket={servingRoom2} />
+          <ServingSlot label="Payment Counter" ticket={servingPayment} />
+          <ServingSlot label="Pharmacy Counter" ticket={servingPharmacy} />
+        </div>
+
+        {/* 2. QUEUE LISTS (Moved inside the card) */}
+        <div className="queues-grid">
+          <QueueList title="Consultation Queue" list={waitingConsultation} />
+          <QueueList title="Payment Queue" list={waitingPayment} />
+          <QueueList title="Pharmacy Queue" list={waitingPharmacy} />
+        </div>
       </div>
-      <div className="card upcoming">
-        <div className="upcoming-header">
-          <h3>Next Up</h3>
-          <p>{upcoming.length ? `Showing next ${upcoming.length}` : 'Awaiting new arrivals'}</p>
-        </div>
-        {upcoming.length === 0 ? (
-          <p className="helper-text">Additional patients will appear here as they check in.</p>
+
+    </section>
+  );
+}
+
+// Sub-components
+function ServingSlot({ label, ticket }) {
+  return (
+    <div className={`serving-slot ${ticket ? 'active' : ''}`}>
+      <span className="slot-label">{label}</span>
+      {ticket ? (
+        <>
+          <h1 className="slot-number">{ticket.queue_number}</h1>
+          <p className="slot-name">{ticket.first_name} {ticket.last_name}</p>
+        </>
+      ) : (
+        <h1 className="slot-number" style={{ opacity: 0.3 }}>—</h1>
+      )}
+    </div>
+  );
+}
+
+function QueueList({ title, list }) {
+  return (
+    <div className="queue-card">
+      <div className="card-header">
+        <h3>{title}</h3>
+        <span className="badge">{list.length}</span>
+      </div>
+      <div className="queue-list-container">
+        {list.length === 0 ? (
+          <p className="empty-message">Empty</p>
         ) : (
-          <ul>
-            {upcoming.map((entry) => (
-              <li
-                key={entry.queue_id}
-                className={entry.queue_number === highlightedQueueNumber ? 'is-highlighted' : ''}
-              >
-                <span className="queue-number">{entry.queue_number}</span>
-                <span>{entry.first_name} {entry.last_name}</span>
+          <ul className="queue-list">
+            {list.map((item) => (
+              <li key={item.id || item.queue_id || item.payment_id || item.pharmacy_id}>
+                <span className="q-num">{item.queue_number}</span>
+                <span className="q-name">{item.first_name} {item.last_name}</span>
               </li>
             ))}
           </ul>
         )}
       </div>
-      <div className="card">
-        <div className="current-header">
-          <p>Pharmacy Pickup</p>
-          <span className="badge">Live</span>
-        </div>
-        <div className={`current-patient${pharmacyHighlight ? ' is-highlighted' : ''}`}>
-          <p className="current-name">
-            {pharmacyHighlight
-              ? `${pharmacyHighlight.first_name} ${pharmacyHighlight.last_name}`
-              : 'Waiting for next pickup'}
-          </p>
-          <h1>{pharmacyHighlight?.queue_number || '—'}</h1>
-          <p className="current-room">
-            {pharmacyHighlight?.status === 'ready'
-              ? 'Ready to collect medication'
-              : pharmacyHighlight
-                ? 'In pharmacy queue'
-                : ''}
-          </p>
-          {pharmacyIsEmpty && <p className="helper-text">No pharmacy patients right now.</p>}
-        </div>
-        <div className="upcoming">
-          <div className="upcoming-header">
-            <h3>Pharmacy Queue</h3>
-            <p>{pharmacyList.length ? `Showing ${pharmacyList.length}` : 'Awaiting next patient'}</p>
-          </div>
-          {pharmacyList.length === 0 ? (
-            <p className="helper-text">Patients will appear here after consultation.</p>
-          ) : (
-            <ul>
-              {pharmacyList.map((entry) => (
-                <li key={entry.pharmacy_id} className={entry.status === 'ready' ? 'is-highlighted' : ''}>
-                  <span className="queue-number">{entry.queue_number}</span>
-                  <span>{entry.first_name} {entry.last_name}</span>
-                  <span className={`badge status-${entry.status}`}>{entry.status === 'ready' ? 'Ready' : 'Waiting'}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </section>
+    </div>
   );
 }
 
