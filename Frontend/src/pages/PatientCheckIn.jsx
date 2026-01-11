@@ -62,8 +62,7 @@ function PatientCheckIn() {
       <div className="patient-hero">
         <div className="patient-floating-grid" />
         <span className="patient-kicker">Self check-in • Instant queue</span>
-        <h2 className="patient-title">Step in, scan, and relax.</h2>
-        <p className="patient-subtitle">We pull your biometrics from the kiosk QR and drop you into the live queue with an ETA.</p>
+        <h3>We pull your biometrics from the kiosk QR and drop you into the live queue with an ETA.</h3>
         <div className="pill-row" style={{ marginTop: '1rem' }}>
           <span className="badge status-waiting">Biometrics optional</span>
           <span className="badge status-ready">Encrypted transit</span>
@@ -92,50 +91,66 @@ function PatientCheckIn() {
       <div className="card patient-lux-card">
         <div className="patient-shimmer" />
         <h3 style={{ marginTop: 0 }}>Check-in form</h3>
-        <p className="helper-text">Fill required items; biometrics auto-fill from the kiosk QR.</p>
+        <p className="helper-text">Name is required; biometrics auto-fill from the kiosk QR.</p>
         <form className="form-grid" onSubmit={handleSubmit}>
-          <label>
-            First Name*
-            <input name="firstName" required value={formData.firstName} onChange={handleChange} />
-          </label>
-          <label>
-            Last Name*
-            <input name="lastName" required value={formData.lastName} onChange={handleChange} />
-          </label>
-          <label>
-            Date of Birth
-            <input
-              type="date"
-              name="dateOfBirth"
-              value={formData.dateOfBirth}
-              onChange={handleChange}
-              placeholder="YYYY-MM-DD"
-            />
-          </label>
-          <label>
-            Phone
-            <input name="phone" value={formData.phone} onChange={handleChange} />
-          </label>
-          <label className="full-width">
-            Symptoms
-            <textarea name="symptoms" rows="3" value={formData.symptoms} onChange={handleChange} />
-          </label>
-          <label>
-            Temperature (°C)
-            <input name="temp" value={formData.temp} onChange={handleChange} />
-          </label>
-          <label>
-            SpO₂ (%)
-            <input name="spo2" value={formData.spo2} onChange={handleChange} />
-          </label>
-          <label>
-            Heart Rate (bpm)
-            <input name="hr" value={formData.hr} onChange={handleChange} />
-          </label>
-          {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={submitting}>
-            {submitting ? 'Submitting…' : 'Submit & join queue'}
-          </button>
+          <div className="checkin-row cols-2">
+            <label>
+              First Name*
+              <input name="firstName" required value={formData.firstName} onChange={handleChange} />
+            </label>
+            <label>
+              Last Name*
+              <input name="lastName" required value={formData.lastName} onChange={handleChange} />
+            </label>
+          </div>
+
+          <div className="checkin-row cols-2">
+            <label>
+              Date of Birth
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                placeholder="YYYY-MM-DD"
+              />
+            </label>
+            <label>
+              Phone
+              <input name="phone" value={formData.phone} onChange={handleChange} />
+            </label>
+          </div>
+
+          <div className="checkin-row">
+            <label className="full-width">
+              Symptoms
+              <textarea class="no-resize" name="symptoms" rows="3" value={formData.symptoms} onChange={handleChange} />
+            </label>
+          </div>
+
+          <div className="checkin-row cols-3">
+            <label>
+              Temperature (°C)
+              <input name="temp" value={formData.temp} onChange={handleChange} />
+            </label>
+            <label>
+              SpO₂ (%)
+              <input name="spo2" value={formData.spo2} onChange={handleChange} />
+            </label>
+            <label>
+              Heart Rate (bpm)
+              <input name="hr" value={formData.hr} onChange={handleChange} />
+            </label>
+          </div>
+
+          {error && <p className="error" style={{textAlign: 'center'}}>{error}</p>}
+          
+          <div className="form-actions">
+            <button type="submit" disabled={submitting}>
+              {submitting ? 'Submitting…' : 'Submit & join queue'}
+            </button>
+          </div>
+          
         </form>
         {confirmation && (
           <div className="confirmation" style={{ borderColor: 'rgba(124, 58, 237, 0.3)' }}>

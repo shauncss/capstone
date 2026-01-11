@@ -174,7 +174,8 @@ main {
 }
 
 .form-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
@@ -666,4 +667,8 @@ button:disabled {
 
 .queue-number {
   font-weight: 600;
+}
+
+.no-resize {
+  resize: none;
 }

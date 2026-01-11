@@ -7,6 +7,10 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--card-shadow);
   isolation: isolate;
+
+  width: 100%;
+  max-width: 1050px; 
+  margin: 0 auto;
 }
 
 .patient-floating-grid {
@@ -128,9 +132,10 @@
 @keyframes patient-rotate { to { transform: rotate(360deg); } }
 
 .lux-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* CHANGED: Replaced grid with flex-column for top-down layout */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .patient-lux-card {
@@ -139,6 +144,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   box-shadow: var(--card-shadow);
+
+  width: 100%;
+  max-width: 1050px; 
+  margin: 0 auto;
 }
 
 .patient-lux-card .patient-shimmer {
@@ -152,4 +161,38 @@
   position: relative;
   margin-top: 1.5rem;
   z-index: 1;
+}
+
+.checkin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.checkin-row {
+  display: grid;
+  gap: 1rem; 
+}
+
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.form-actions button {
+  width: auto;        
+  min-width: 200px;   
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .checkin-row { grid-template-columns: 1fr; }
+  .form-actions button { width: 100%; }
 }
