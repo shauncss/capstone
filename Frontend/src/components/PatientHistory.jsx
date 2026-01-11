@@ -12,7 +12,6 @@ function PatientHistory({
       <div className="history-header">
         <div>
           <h3>Patient History</h3>
-          <p className="history-subtitle">Recently completed visits.</p>
         </div>
         <div className="history-actions">
           <button type="button" onClick={onRefresh} disabled={loading}>

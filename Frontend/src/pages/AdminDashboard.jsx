@@ -107,12 +107,14 @@ function AdminDashboard() {
     socket.on('room_update', setRooms);
     socket.on('new_patient', handleNewPatient);
     socket.on('pharmacy_update', setPharmacyQueue);
+    socket.on('payment_update', setPaymentQueue);
 
     return () => {
       socket.off('queue_update', setQueue);
       socket.off('room_update', setRooms);
       socket.off('new_patient', handleNewPatient);
       socket.off('pharmacy_update', setPharmacyQueue);
+      socket.off('payment_update', setPaymentQueue);
     };
   }, [socket]);
 
@@ -178,6 +180,33 @@ function AdminDashboard() {
       setError(message);
     } finally {
       setAutoAssigning(false);
+    }
+  };
+  
+  const handleCallNextPayment = async () => {
+    setCallingPaymentNext(true);
+    setError('');
+    try {
+      await callNextPaymentPatient();
+    } catch (err) {
+      const message = err?.response?.data?.message || 'No patients waiting for payment';
+      setError(message);
+    } finally {
+      setCallingPaymentNext(false);
+    }
+  };
+
+  const handleCompletePayment = async (paymentId) => {
+    if (!paymentId) return;
+    setCompletingPaymentId(paymentId);
+    setError('');
+    try {
+      await completePaymentPatient({ paymentId });
+    } catch (err) {
+      const message = err?.response?.data?.message || 'Unable to complete payment';
+      setError(message);
+    } finally {
+      setCompletingPaymentId(null);
     }
   };
 
