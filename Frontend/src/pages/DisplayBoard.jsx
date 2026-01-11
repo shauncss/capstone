@@ -57,12 +57,12 @@ function DisplayBoard() {
   const waitingPayment = paymentQueue.filter(q => q.status === 'waiting');
   const waitingPharmacy = pharmacyQueue.filter(q => q.status === 'waiting');
 
-  if (loading) return <div className="display-board"><p>Loading...</p></div>;
+  if (loading) return <div className="display-content"><p>Loading...</p></div>;
 
   return (
     <section className="display-content">
       
-      {/* 1. NOW SERVING CARD (Contains everything now) */}
+      {/* 1. NOW SERVING CARD (Top Section) */}
       <div className="now-serving-card">
         <div className="card-header centered">
           <h2>Now Serving</h2>
@@ -74,13 +74,13 @@ function DisplayBoard() {
           <ServingSlot label="Payment Counter" ticket={servingPayment} />
           <ServingSlot label="Pharmacy Counter" ticket={servingPharmacy} />
         </div>
+      </div>
 
-        {/* 2. QUEUE LISTS (Moved inside the card) */}
-        <div className="queues-grid">
-          <QueueList title="Consultation Queue" list={waitingConsultation} />
-          <QueueList title="Payment Queue" list={waitingPayment} />
-          <QueueList title="Pharmacy Queue" list={waitingPharmacy} />
-        </div>
+      {/* 2. QUEUE LISTS (Bottom Section - Moved Outside) */}
+      <div className="queues-grid">
+        <QueueList title="Consultation Queue" list={waitingConsultation} />
+        <QueueList title="Payment Queue" list={waitingPayment} />
+        <QueueList title="Pharmacy Queue" list={waitingPharmacy} />
       </div>
 
     </section>

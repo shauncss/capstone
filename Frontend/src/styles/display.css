@@ -1,28 +1,27 @@
 /* Frontend/src/styles/display.css */
 
-/* 1. MAIN CONTAINER */
+/* 1. MAIN CONTAINER (Renamed from display-board) */
 .display-content {
   height: 100vh;
   box-sizing: border-box;
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  background: var(--bg-dark, #0f172a); 
+  background: transparent; 
   overflow: hidden;
+  gap: 1.5rem; /* Space between Now Serving and Queues */
 }
 
-/* 2. MAIN CARD (Now Serving + Queues) */
+/* 2. MAIN CARD (Now Serving) */
 .now-serving-card {
-  flex: 1; /* Grow to fill the screen */
-  display: flex; /* Layout internal sections vertically */
+  display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Space between serving section and queues */
-  
   background: linear-gradient(170deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 1rem;
   padding: 1rem;
-  overflow: hidden; /* Prevent spillover */
+  overflow: hidden;
+  flex-shrink: 0; /* Prevent it from shrinking too small */
 }
 
 /* Header inside Now Serving */
@@ -48,7 +47,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  flex: 0 0 auto; /* Don't stretch this section unnecessarily */
+  flex: 0 0 auto;
+  padding-top: 1rem;
 }
 
 /* 3. SERVING SLOT STYLING */
@@ -97,13 +97,13 @@
   text-overflow: ellipsis;
 }
 
-/* 4. QUEUES SECTION (Inside the card) */
+/* 4. QUEUES SECTION (Moved Outside) */
 .queues-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  flex: 1; /* Fill the remaining height of the card */
-  min-height: 0; /* Crucial for inner scrolling */
+  flex: 1; /* This makes the queues fill the rest of the screen */
+  min-height: 0; /* Important for inner scrolling */
 }
 
 .queue-card {
@@ -111,8 +111,7 @@
   flex-direction: column;
   background: rgba(30, 41, 59, 0.7);
   border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 4px solid var(--primary, #6366f1);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   overflow: hidden;
 }
 
@@ -166,7 +165,7 @@
   .serving-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .display-board { height: auto; overflow: visible; }
+  .display-content { height: auto; overflow: visible; }
   .serving-grid { grid-template-columns: 1fr; }
   .queues-grid { grid-template-columns: 1fr; }
 }
