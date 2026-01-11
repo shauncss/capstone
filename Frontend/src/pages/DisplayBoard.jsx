@@ -62,7 +62,7 @@ function DisplayBoard() {
   return (
     <section className="display-content">
       
-      {/* 1. NOW SERVING CARD (Top Section) */}
+      {/* 1. NOW SERVING */}
       <div className="now-serving-card">
         <div className="card-header centered">
           <h2>Now Serving</h2>
@@ -76,7 +76,7 @@ function DisplayBoard() {
         </div>
       </div>
 
-      {/* 2. QUEUE LISTS (Bottom Section - Moved Outside) */}
+      {/* 2. QUEUE LISTS */}
       <div className="queues-grid">
         <QueueList title="Consultation Queue" list={waitingConsultation} />
         <QueueList title="Payment Queue" list={waitingPayment} />

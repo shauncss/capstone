@@ -30,7 +30,7 @@
   justify-content: center;
   align-items: center;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid rgba(120, 255, 255, 0.6);
   flex: 0 0 auto;
 }
 
@@ -99,11 +99,11 @@
 
 /* 4. QUEUES SECTION (Moved Outside) */
 .queues-grid {
+  margin-top: 6px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  flex: 1; /* This makes the queues fill the rest of the screen */
-  min-height: 0; /* Important for inner scrolling */
+  align-items: start;
 }
 
 .queue-card {
@@ -112,11 +112,12 @@
   background: rgba(30, 41, 59, 0.7);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  overflow: hidden;
+  height: auto;
 }
 
 .queue-card .card-header {
   padding: 0.75rem 1rem;
+  border-radius: 1rem;
   background: rgba(0,0,0,0.2);
   display: flex;
   justify-content: space-between;
@@ -130,8 +131,6 @@
 }
 
 .queue-list-container {
-  flex: 1;
-  overflow-y: auto;
   padding: 0.5rem;
 }
 
