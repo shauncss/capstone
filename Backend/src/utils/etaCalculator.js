@@ -1,4 +1,4 @@
-const FIXED_OVERHEAD_MIN = 10; // reduced reg time
+const FIXED_OVERHEAD_MIN = 5; // reduced reg time
 const AVG_SERVICE_TIME_MIN = 12; // average provider service duration
 const ACTIVE_DOCTORS = 2; //fix to 2 doctors
 
@@ -9,7 +9,7 @@ const ACTIVE_DOCTORS = 2; //fix to 2 doctors
  */
 
 function calculateEta(queueLength = 0) {
-  const rounds = Math.ceil(queueLength / ACTIVE_DOCTORS); // e.g., 5 patients / 2 doctors = 3 rounds (2 + 2 + 1)
+  const rounds = Math.floor(queueLength / ACTIVE_DOCTORS);
   const realTimeWait = rounds * AVG_SERVICE_TIME_MIN;
   return FIXED_OVERHEAD_MIN + realTimeWait;
 }
