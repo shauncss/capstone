@@ -21,7 +21,11 @@
   border-radius: 1rem;
   padding: 1rem;
   overflow: hidden;
-  flex-shrink: 0; /* Prevent it from shrinking too small */
+  flex-shrink: 0;
+  
+  width: 100%;
+  max-width: 900px; 
+  margin: 0 auto;
 }
 
 /* Header inside Now Serving */
@@ -42,13 +46,16 @@
   letter-spacing: 0.1em;
 }
 
-/* Grid for the 4 slots */
 .serving-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
   flex: 0 0 auto;
   padding-top: 1rem;
+
+  width: 100%;
+  max-width: 600px; 
+  margin: 0 auto;
 }
 
 /* 3. SERVING SLOT STYLING */

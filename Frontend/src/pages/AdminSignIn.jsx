@@ -56,17 +56,9 @@ function AdminSignIn({ onAuthed }) {
           />
         </label>
         {error && <p className="error">{error}</p>}
-        <div className="full-width auth-actions">
+        <div className="full-width auth-actions" style={{ marginTop: '1rem' }}>
           <button type="submit" disabled={submitting}>
             {submitting ? 'Signing in…' : 'Sign in'}
-          </button>
-          <button
-            type="button"
-            className="ghost-button"
-            onClick={() => navigate('/')}
-            disabled={submitting}
-          >
-            Back to patient
           </button>
         </div>
       </form>
