@@ -115,11 +115,12 @@ function PatientCheckIn() {
                   const formatted = date ? date.toISOString().split('T')[0] : '';
                   setFormData(prev => ({ ...prev, dateOfBirth: formatted }));
                 }}
-                dateFormat="yyyy-MM-dd"
                 placeholderText="Click to select date"
                 
+                showMonthDropdown
                 showYearDropdown
-                dropdownMode="select"      
+                dropdownMode="select"     
+                calendarClassName="compact-calendar" 
                 className="custom-datepicker"
                 wrapperClassName="date-picker-wrapper"
               />
