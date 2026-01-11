@@ -8,30 +8,12 @@ function RoomsPanel({
   onAssignRoom,
   assigningRoomId,
 }) {
-  const [editingRoomId, setEditingRoomId] = useState(null);
-  const [draftNames, setDraftNames] = useState({});
   const [roomSelections, setRoomSelections] = useState({});
 
   const waitingQueue = queue.filter(q => q.status === 'waiting');
   const availableRooms = rooms.filter((room) => room.is_available).length;
   const busyRooms = rooms.length - availableRooms;
   const hasWaiting = waitingQueue.length > 0;
-
-  const handleEditToggle = (room) => {
-    if (editingRoomId === room.id) {
-      setEditingRoomId(null);
-      return;
-    }
-    setDraftNames((prev) => ({ ...prev, [room.id]: room.name }));
-    setEditingRoomId(room.id);
-  };
-
-  const handleSaveName = async (roomId) => {
-    const value = draftNames[roomId]?.trim();
-    if (!value) return;
-    await onRenameRoom?.(roomId, value);
-    setEditingRoomId(null);
-  };
 
   const handleAssign = async (roomId) => {
     const queueId = roomSelections[roomId];
@@ -80,7 +62,6 @@ function RoomsPanel({
                   </span>
                 </div>
                 
-                {/* Display Queue Number instead of Patient ID */}
                 <p className="room-status-line">
                   {room.is_available
                     ? 'Waiting for the next patient.'
@@ -91,7 +72,6 @@ function RoomsPanel({
                   {room.is_available ? (
                     hasWaiting ? (
                       <div className="assign-controls vertical">
-                        {/* CSS Class applied here */}
                         <select
                           className="room-select"
                           value={roomSelections[room.id] || ''}
@@ -136,8 +116,6 @@ function RoomsPanel({
                     </button>
                   )}
                 </div>
-                
-                {/* Secondary Actions (Edit/Delete) Removed */}
               </div>
             );
           })}

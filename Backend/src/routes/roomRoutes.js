@@ -7,6 +7,5 @@ router.get('/rooms', roomController.getRooms);
 router.post('/rooms/assign', roomController.assignRoom);
 router.post('/rooms/finish', roomController.finishRoom);
 router.post('/rooms/auto-assign', roomController.autoAssign);
-router.patch('/rooms/:id', roomController.updateRoomDetails);
 
 module.exports = router;

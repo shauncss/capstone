@@ -48,28 +48,9 @@ async function autoAssign(_req, res, next) {
   }
 }
 
-async function updateRoomDetails(req, res, next) {
-  try {
-    const { id } = req.params;
-    const { name } = req.body;
-    if (!name || !name.trim()) {
-      return res.status(400).json({ message: 'name is required' });
-    }
-    const updated = await roomModel.updateRoom(id, { name: name.trim() });
-    await queueService.broadcastRooms();
-    return res.json({ room: updated });
-  } catch (error) {
-    if (error.code === '23505') {
-      return res.status(409).json({ message: 'Room name must be unique' });
-    }
-    next(error);
-  }
-}
-
 module.exports = {
   getRooms,
   assignRoom,
   finishRoom,
-  autoAssign,
-  updateRoomDetails
+  autoAssign
 };
