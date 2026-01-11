@@ -261,7 +261,7 @@ function AdminDashboard() {
       <div className="admin-grid-lux">
         <div className="card stat admin-card-lux success">
           <div className="admin-shimmer" />
-          <p>Pharmacy Queue Length</p>
+          <p>Consultation Queue Length</p>
           <h2 style={{ margin: '0.35rem 0 0' }}>{queue.length}</h2>
           <p className="helper-text">Waiting + Called</p>
         </div>
