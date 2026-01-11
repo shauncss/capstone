@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import DatePicker from 'react-datepicker'; // 1. Import Component
+import 'react-datepicker/dist/react-datepicker.css'; // 2. Import Styles
 import { submitCheckIn } from '../services/api';
 import '../styles/patient.css';
 
@@ -105,14 +107,21 @@ function PatientCheckIn() {
           </div>
 
           <div className="checkin-row cols-2">
-            <label>
+            <label className="date-picker-label">
               Date of Birth
-              <input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                placeholder="YYYY-MM-DD"
+              <DatePicker
+                selected={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
+                onChange={(date) => {
+                  const formatted = date ? date.toISOString().split('T')[0] : '';
+                  setFormData(prev => ({ ...prev, dateOfBirth: formatted }));
+                }}
+                dateFormat="yyyy-MM-dd"
+                placeholderText="Click to select date"
+                
+                showYearDropdown
+                dropdownMode="select"      
+                className="custom-datepicker"
+                wrapperClassName="date-picker-wrapper"
               />
             </label>
             <label>

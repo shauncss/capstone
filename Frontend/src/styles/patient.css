@@ -191,6 +191,130 @@
   padding-right: 2rem;
 }
 
+/*Custom DatePicker Styling*/
+.date-picker-wrapper {
+  width: 100%;
+}
+
+.custom-datepicker {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.custom-datepicker:focus {
+  outline: none;
+  border-color: rgba(124, 58, 237, 0.7);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+}
+
+/* 2. Calendar Popup Container */
+.react-datepicker {
+  font-family: inherit !important;
+  background-color: #1e293b !important; /* Dark background */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  color: #e2e8f0 !important;
+  overflow: hidden;
+}
+
+/* 3. Header Section */
+.react-datepicker__header {
+  background-color: #0f172a !important; /* Darker header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding-top: 1rem !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header,
+.react-datepicker-year-header {
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__day-name {
+  color: #94a3b8 !important;
+}
+
+/* 4. Days */
+.react-datepicker__day {
+  color: #cbd5e1 !important;
+  border-radius: 0.3rem !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(124, 58, 237, 0.3) !important;
+  color: white !important;
+}
+
+/* Selected Day */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
+  color: white !important;
+  font-weight: bold !important;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+
+/* Outside Month */
+.react-datepicker__day--outside-month {
+  color: #475569 !important;
+}
+
+/* 5. Navigation Arrows */
+.react-datepicker__navigation-icon::before {
+  border-color: #cbd5e1 !important;
+}
+
+/* 6. Year Dropdown Scrollbar */
+.react-datepicker__year-dropdown {
+  background-color: #1e293b !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.react-datepicker__year-option:hover {
+  background-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+.react-datepicker__year-option {
+  color: #cbd5e1 !important;
+}
+
+.react-datepicker__header__dropdown {
+  margin-top: 10px; 
+}
+
+.react-datepicker__year-select,
+.react-datepicker__month-select {
+  background-color: #1e293b;       /* Dark background */
+  color: #e2e8f0;                  /* Light text */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 0.85rem;
+  margin: 0 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.react-datepicker__year-select::-webkit-scrollbar {
+  width: 8px;
+  background: #0f172a;
+}
+
+.react-datepicker__year-select::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   .checkin-row { grid-template-columns: 1fr; }
