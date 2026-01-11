@@ -60,7 +60,7 @@ function DisplayBoard() {
   if (loading) return <div className="display-board"><p>Loading...</p></div>;
 
   return (
-    <section className="display-board">
+    <section className="display-content">
       
       {/* 1. NOW SERVING CARD (Contains everything now) */}
       <div className="now-serving-card">

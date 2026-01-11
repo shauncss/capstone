@@ -1,7 +1,7 @@
 /* Frontend/src/styles/display.css */
 
 /* 1. MAIN CONTAINER */
-.display-board {
+.display-content {
   height: 100vh;
   box-sizing: border-box;
   padding: 1rem;
