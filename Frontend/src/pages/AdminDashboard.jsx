@@ -6,16 +6,13 @@ import PatientHistory from '../components/PatientHistory';
 import PharmacyQueuePanel from '../components/PharmacyQueuePanel';
 import '../styles/admin.css';
 import {
-  addRoom,
   assignRoom,
   autoAssignNext,
-  deleteRoom,
   fetchEta,
   fetchHistory,
   fetchQueue,
   fetchRooms,
   finishRoom,
-  updateRoom,
   fetchPharmacyQueue,
   callNextPharmacyPatient,
   completePharmacyPatient
@@ -25,23 +22,27 @@ const HISTORY_LIMIT = 200;
 
 function AdminDashboard() {
   const socket = useSocket();
+  const [activeTab, setActiveTab] = useState('consultation');
+
   const [queue, setQueue] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [selection, setSelection] = useState({});
   const [etaPreview, setEtaPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [newRoom, setNewRoom] = useState('');
-  const [addingRoom, setAddingRoom] = useState(false);
+  
+  // Room action states
   const [finishingRoomId, setFinishingRoomId] = useState(null);
   const [autoAssigning, setAutoAssigning] = useState(false);
   const [assigningRoomId, setAssigningRoomId] = useState(null);
-  const [updatingRoomId, setUpdatingRoomId] = useState(null);
-  const [deletingRoomId, setDeletingRoomId] = useState(null);
+
+  // History states
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
   const [historyHasMore, setHistoryHasMore] = useState(false);
+
+  // Pharmacy states
   const [pharmacyQueue, setPharmacyQueue] = useState([]);
   const [callingPharmacyNext, setCallingPharmacyNext] = useState(false);
   const [completingPharmacyId, setCompletingPharmacyId] = useState(null);
@@ -169,47 +170,6 @@ function AdminDashboard() {
     }
   };
 
-  const handleRenameRoom = async (roomId, name) => {
-    setUpdatingRoomId(roomId);
-    setError('');
-    try {
-      await updateRoom(roomId, { name });
-    } catch (err) {
-      const message = err?.response?.data?.message || 'Unable to rename room';
-      setError(message);
-    } finally {
-      setUpdatingRoomId(null);
-    }
-  };
-
-  const handleDeleteRoom = async (roomId) => {
-    setDeletingRoomId(roomId);
-    setError('');
-    try {
-      await deleteRoom(roomId);
-    } catch (err) {
-      const message = err?.response?.data?.message || 'Unable to remove room';
-      setError(message);
-    } finally {
-      setDeletingRoomId(null);
-    }
-  };
-
-  const handleAddRoom = async (event) => {
-    event.preventDefault();
-    if (!newRoom.trim()) return;
-    setAddingRoom(true);
-    try {
-      setError('');
-      await addRoom({ name: newRoom.trim() });
-      setNewRoom('');
-    } catch (err) {
-      setError('Failed to add room');
-    } finally {
-      setAddingRoom(false);
-    }
-  };
-
   const handleCallNextPharmacy = async () => {
     setCallingPharmacyNext(true);
     setError('');
@@ -248,75 +208,138 @@ function AdminDashboard() {
   return (
     <section className="admin-grid">
       {error && <p className="error">{error}</p>}
+      
       <div className="admin-hero">
         <div className="admin-floating-grid" />
-        <div className="admin-pill-row">
-          <span className="badge">Control deck</span>
-          <span className="badge status-ready">Realtime linked</span>
-          <span className="badge status-waiting">Pharmacy handoff</span>
-        </div>
-        <h2>Orchestrate rooms, queue, and pharmacy in one glass cockpit.</h2>
-        <p className="helper-text">Live sockets, instant actions, and history at a glance.</p>
-      </div>
-      <div className="admin-grid-lux">
-        <div className="card stat admin-card-lux success">
-          <div className="admin-shimmer" />
-          <p>Consultation Queue Length</p>
-          <h2 style={{ margin: '0.35rem 0 0' }}>{queue.length}</h2>
-          <p className="helper-text">Waiting + Called</p>
-        </div>
-        <div className="card stat admin-card-lux info">
-          <div className="admin-shimmer" />
-          <p>ETA for new patient</p>
-          <h2 style={{ margin: '0.35rem 0 0' }}>{etaPreview?.etaMinutes ?? '—'} min</h2>
-          <p className="helper-text">Based on current load</p>
-        </div>
-        <div className="card quick-actions admin-card-lux warning">
-          <div className="admin-shimmer" />
-          <div>
-            <b>Quick Actions</b>
+        
+        <h3 style={{ 
+          fontSize: '1.25rem', 
+          marginBottom: '1rem', 
+          marginTop: '0.2rem',
+          position: 'relative', 
+          zIndex: 1,
+          fontWeight: 600,
+          color: '#e2e8f0'
+        }}>
+          Admin Dashboard - Authorized personnel only.
+        </h3>
+
+        <div style={{ 
+          display: 'flex', 
+          flexWrap: 'wrap', 
+          gap: '0.75rem', 
+          position: 'relative', 
+          zIndex: 1 
+        }}>
+          <div 
+            className={`nav-card ${activeTab === 'consultation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('consultation')}
+          >
+            <h3>Consultation</h3>
           </div>
-          <div className="action-buttons">
-            <button type="button" onClick={handleAutoAssign} disabled={autoAssignDisabled}>
-              {autoAssigning ? 'Auto assigning…' : 'Auto assign next patient'}
-            </button>
-            <p className="helper-text">
-              Auto assigns the next patient to an empty consultation room.
-            </p>
+
+          <div 
+            className={`nav-card ${activeTab === 'payment' ? 'active' : ''}`}
+            onClick={() => setActiveTab('payment')}
+          >
+            <h3>Payment</h3>
+          </div>
+
+          <div 
+            className={`nav-card ${activeTab === 'pharmacy' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pharmacy')}
+          >
+            <h3>Pharmacy</h3>
+          </div>
+
+          <div 
+            className={`nav-card ${activeTab === 'history' ? 'active' : ''}`}
+            onClick={() => setActiveTab('history')}
+          >
+            <h3>Patient History</h3>
           </div>
         </div>
       </div>
-      <QueueTable
-        queue={queue}
-        rooms={rooms}
-        selection={selection}
-        onSelectRoom={handleSelectRoom}
-        onAssignRoom={handleAssignRoom}
-      />
-      <RoomsPanel
-        rooms={rooms}
-        queue={queue}
-        onFinishRoom={handleFinishRoom}
-        finishingRoomId={finishingRoomId}
-        onAssignRoom={handleAssignFromRoom}
-        assigningRoomId={assigningRoomId}
-      />
-      <PharmacyQueuePanel
-        queue={pharmacyQueue}
-        onCallNext={handleCallNextPharmacy}
-        onComplete={handleCompletePharmacy}
-        callingNext={callingPharmacyNext}
-        completingId={completingPharmacyId}
-      />
-      <PatientHistory
-        history={history}
-        loading={historyLoading}
-        onRefresh={() => loadHistory(historyPage)}
-        page={historyPage}
-        hasMore={historyHasMore}
-        onNextPage={() => loadHistory(historyPage + 1)}
-        onPrevPage={() => loadHistory(Math.max(historyPage - 1, 1))}
-      />
+
+      {/* 1. CONSULTATION PAGE */}
+      {activeTab === 'consultation' && (
+        <>
+          <div className="admin-grid-lux">
+            <div className="card stat admin-card-lux success">
+              <div className="admin-shimmer" />
+              <p>Queue Length</p>
+              <h2 style={{ margin: '0.35rem 0 0' }}>{queue.length}</h2>
+              <p className="helper-text">Waiting + called</p>
+            </div>
+            <div className="card stat admin-card-lux info">
+              <div className="admin-shimmer" />
+              <p>ETA (new patient)</p>
+              <h2 style={{ margin: '0.35rem 0 0' }}>{etaPreview?.etaMinutes ?? '—'} min</h2>
+              <p className="helper-text">Based on current load</p>
+            </div>
+            <div className="card quick-actions admin-card-lux warning">
+              <div className="admin-shimmer" />
+                <p>Quick Actions</p>
+              <div className="action-buttons">
+                <button type="button" onClick={handleAutoAssign} disabled={autoAssignDisabled}>
+                  {autoAssigning ? 'Auto assigning…' : 'Auto assign next patient'}
+                </button>
+              </div>
+              <p className="helper-text">Match next patient to an available room.</p>
+            </div>
+          </div>
+
+          <RoomsPanel
+            rooms={rooms}
+            queue={queue}
+            onFinishRoom={handleFinishRoom}
+            finishingRoomId={finishingRoomId}
+            onAssignRoom={handleAssignFromRoom}
+            assigningRoomId={assigningRoomId}
+          />
+          <QueueTable
+            queue={queue}
+            rooms={rooms}
+            selection={selection}
+            onSelectRoom={handleSelectRoom}
+            onAssignRoom={handleAssignRoom}
+          />
+        </>
+      )}
+
+      {/* 2. PAYMENT PAGE */}
+      {activeTab === 'payment' && (
+        <div className="card">
+          <h3>Payment</h3>
+          <p style={{ color: '#94a3b8', padding: '2rem 0', textAlign: 'center' }}>
+            Payment module is currently empty.
+          </p>
+        </div>
+      )}
+
+      {/* 3. PHARMACY PAGE */}
+      {activeTab === 'pharmacy' && (
+        <PharmacyQueuePanel
+          queue={pharmacyQueue}
+          onCallNext={handleCallNextPharmacy}
+          onComplete={handleCompletePharmacy}
+          callingNext={callingPharmacyNext}
+          completingId={completingPharmacyId}
+        />
+      )}
+
+      {/* 4. PATIENT HISTORY PAGE */}
+      {activeTab === 'history' && (
+        <PatientHistory
+          history={history}
+          loading={historyLoading}
+          onRefresh={() => loadHistory(historyPage)}
+          page={historyPage}
+          hasMore={historyHasMore}
+          onNextPage={() => loadHistory(historyPage + 1)}
+          onPrevPage={() => loadHistory(Math.max(historyPage - 1, 1))}
+        />
+      )}
     </section>
   );
 }
