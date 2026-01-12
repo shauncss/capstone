@@ -60,4 +60,8 @@ export const callNextPharmacyPatient = () => api.post('/pharmacy/call-next');
 export const completePharmacyPatient = (payload) => api.post('/pharmacy/complete', payload);
 export const adminLogin = (payload) => api.post('/admin/login', payload);
 
+export const bookAppointment = (data) => api.post('/appointments/book', data);
+export const findMyAppointment = (phone) => api.get(`/appointments/find?phone=${phone}`);
+export const checkInAppointment = (id, vitals) => api.post(`/appointments/${id}/checkin`, vitals);
+
 export default api;

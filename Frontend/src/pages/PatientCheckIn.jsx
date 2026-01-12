@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import DatePicker from 'react-datepicker'; // 1. Import Component
-import 'react-datepicker/dist/react-datepicker.css'; // 2. Import Styles
-import { submitCheckIn } from '../services/api';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { submitCheckIn, bookAppointment, findMyAppointment, checkInAppointment } from '../services/api';
 import '../styles/patient.css';
 
 const initialState = {
@@ -19,11 +19,22 @@ const initialState = {
 function PatientCheckIn() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // TABS: 'walkin' | 'book' | 'arrived'
+  const [activeTab, setActiveTab] = useState('walkin');
+
+  // STATES
   const [formData, setFormData] = useState(initialState);
+  const [bookingData, setBookingData] = useState({ firstName: '', lastName: '', phone: '', appointmentTime: null });
+  const [lookupPhone, setLookupPhone] = useState('');
+  const [foundAppointment, setFoundAppointment] = useState(null);
+
   const [submitting, setSubmitting] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
+  // 1. PRE-FILL VITALS (for walk-in)
   useEffect(() => {
     const temp = searchParams.get('temp') || '';
     const spo2 = searchParams.get('spo2') || '';
@@ -31,13 +42,20 @@ function PatientCheckIn() {
     setFormData((prev) => ({ ...prev, temp, spo2, hr }));
   }, [searchParams]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  // --- HANDLERS ---
+  const handleWalkInChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleBookingChange = (e) => {
+    const { name, value } = e.target;
+    setBookingData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // SUBMIT: WALK-IN
+  const handleWalkInSubmit = async (e) => {
+    e.preventDefault();
     setSubmitting(true);
     setError('');
     try {
@@ -51,11 +69,68 @@ function PatientCheckIn() {
     }
   };
 
+  // SUBMIT: BOOK APPOINTMENT
+  const handleBookSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+    setSuccessMsg('');
+    try {
+      await bookAppointment(bookingData);
+      setSuccessMsg(`Appointment booked for ${bookingData.firstName}! We'll see you then.`);
+      setBookingData({ firstName: '', lastName: '', phone: '', appointmentTime: null });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Booking failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // SUBMIT: FIND APPOINTMENT
+  const handleFindAppointment = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+    setFoundAppointment(null);
+    try {
+      const { data } = await findMyAppointment(lookupPhone);
+      setFoundAppointment(data);
+    } catch (err) {
+      setError('No appointment found for this number today.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // SUBMIT: CHECK-IN APPOINTMENT
+  const handleArrivedCheckIn = async () => {
+    if (!foundAppointment) return;
+    setSubmitting(true);
+    try {
+      // We pass the current vitals (from URL/Kiosk) to the check-in
+      const vitals = {
+        temp: formData.temp,
+        spo2: formData.spo2,
+        hr: formData.hr,
+        symptoms: 'Scheduled Visit'
+      };
+      const { data } = await checkInAppointment(foundAppointment.id, vitals);
+      setConfirmation(data);
+      setFoundAppointment(null);
+      setLookupPhone('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Check-in failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // REDIRECT ON SUCCESS
   useEffect(() => {
     if (!confirmation) return undefined;
     const timeout = setTimeout(() => {
       navigate('/display', { state: { queueNumber: confirmation.queueNumber } });
-    }, 4000);
+    }, 5000);
     return () => clearTimeout(timeout);
   }, [confirmation, navigate]);
 
@@ -63,112 +138,187 @@ function PatientCheckIn() {
     <section className="lux-grid">
       <div className="patient-hero">
         <div className="patient-floating-grid" />
-        <span className="patient-kicker">Self check-in • Instant queue</span>
-        <h3>We pull your biometrics from the kiosk QR and drop you into the live queue with an ETA.</h3>
-        <div className="pill-row" style={{ marginTop: '1rem' }}>
-          <span className="badge status-waiting">Biometrics optional</span>
-          <span className="badge status-ready">Encrypted transit</span>
-          <span className="badge status-called">Live ETA preview</span>
-        </div>
-        <div className="patient-biometrics">
-          <div className="patient-sparkles">
-            <div className="patient-sparkle" />
-            <div className="patient-sparkle" />
-            <div className="patient-sparkle" />
-            <div className="patient-sparkle" />
+        <h3 className="patient-title">Patient Dashboard - Check Ins and Appointments</h3>
+        
+        {/* NEW NAVIGATION BAR */}
+        <div className="patient-nav-row">
+          <div
+            className={`nav-pill ${activeTab === 'walkin' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('walkin'); setError(''); setSuccessMsg(''); }}
+          >
+            Self Check-in
           </div>
-          <div className="patient-neon" style={{ padding: '1rem' }}>
-            <div style={{ position: 'relative', zIndex: 1, display: 'grid', gap: '0.35rem' }}>
-              <p className="helper-text">Latest biometrics detected</p>
-              <div className="pill-row">
-                <span className="badge">Temp: {formData.temp || '—'}°C</span>
-                <span className="badge">SpO₂: {formData.spo2 || '—'}%</span>
-                <span className="badge">HR: {formData.hr || '—'} bpm</span>
-              </div>
-            </div>
+
+          <div style={{ flex: 1 }}></div>
+          <div 
+            className={`nav-pill ${activeTab === 'book' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('book'); setError(''); setSuccessMsg(''); }}
+            style={{ marginRight: '1.5rem' }}
+          >
+            Make an Appointment
+          </div>
+
+          <div
+            className={`nav-pill ${activeTab === 'arrived' ? 'active' : ''}`}
+            onClick={() => { setActiveTab('arrived'); setError(''); setSuccessMsg(''); }}
+          >
+            I have an Appointment
           </div>
         </div>
       </div>
 
       <div className="card patient-lux-card">
         <div className="patient-shimmer" />
-        <h3 style={{ marginTop: 0 }}>Check-in form</h3>
-        <p className="helper-text">Name is required; biometrics auto-fill from the kiosk QR.</p>
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <div className="checkin-row cols-2">
-            <label>
-              First Name*
-              <input name="firstName" required value={formData.firstName} onChange={handleChange} />
-            </label>
-            <label>
-              Last Name*
-              <input name="lastName" required value={formData.lastName} onChange={handleChange} />
-            </label>
-          </div>
 
-          <div className="checkin-row cols-2">
-            <label className="date-picker-label">
-              Date of Birth
-              <DatePicker
-                selected={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
-                onChange={(date) => {
-                  const formatted = date ? date.toISOString().split('T')[0] : '';
-                  setFormData(prev => ({ ...prev, dateOfBirth: formatted }));
-                }}
-                placeholderText="Click to select date"
+        {/* --- VIEW 1: SELF CHECK-IN (WALK-IN) --- */}
+        {activeTab === 'walkin' && (
+          <>
+            <h3 style={{ marginTop: 0 }}>Self Check-in Form</h3>
+            <p className="helper-text">Biometrics auto-fills from the kiosk QR.</p>
+            <form className="form-grid" onSubmit={handleWalkInSubmit}>
+              <div className="checkin-row cols-2">
+                <label>
+                  First Name*
+                  <input name="firstName" required value={formData.firstName} onChange={handleWalkInChange} />
+                </label>
+                <label>
+                  Last Name*
+                  <input name="lastName" required value={formData.lastName} onChange={handleWalkInChange} />
+                </label>
+              </div>
+
+              <div className="checkin-row cols-2">
+                <label className="date-picker-label">
+                  Date of Birth
+                  <DatePicker
+                    selected={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
+                    onChange={(date) => {
+                      const formatted = date ? date.toISOString().split('T')[0] : '';
+                      setFormData(prev => ({ ...prev, dateOfBirth: formatted }));
+                    }}
+                    placeholderText="Click to select"
+                    showMonthDropdown showYearDropdown dropdownMode="select"     
+                    calendarClassName="compact-calendar" 
+                    className="custom-datepicker" wrapperClassName="date-picker-wrapper"
+                  />
+                </label>
+                <label>
+                  Phone
+                  <input name="phone" value={formData.phone} onChange={handleWalkInChange} />
+                </label>
+              </div>
+
+              <div className="checkin-row">
+                <label className="full-width">
+                  Symptoms
+                  <textarea class="no-resize" name="symptoms" rows="3" value={formData.symptoms} onChange={handleWalkInChange} />
+                </label>
+              </div>
+              
+              {/* Biometrics Display */}
+              <div className="checkin-row cols-3">
+                 <label>Temperature (°C)<input name="temp" value={formData.temp} onChange={handleWalkInChange} /></label>
+                 <label>SpO₂ (%)<input name="spo2" value={formData.spo2} onChange={handleWalkInChange} /></label>
+                 <label>Heart Rate (bpm)<input name="hr" value={formData.hr} onChange={handleWalkInChange} /></label>
+              </div>
+
+              {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
+              <div className="form-actions">
+                <button type="submit" disabled={submitting}>
+                  {submitting ? 'Submitting…' : 'Submit & Join Queue'}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+
+        {/* --- VIEW 2: MAKE APPOINTMENT --- */}
+        {activeTab === 'book' && (
+          <>
+            <h3 style={{ marginTop: 0 }}>Book a Future Visit</h3>
+            <p className="helper-text">Secure your slot for a future date.</p>
+            <form className="form-grid" onSubmit={handleBookSubmit}>
+              <div className="checkin-row cols-2">
+                <label>First Name*<input name="firstName" required value={bookingData.firstName} onChange={handleBookingChange} /></label>
+                <label>Last Name*<input name="lastName" required value={bookingData.lastName} onChange={handleBookingChange} /></label>
+              </div>
+              <div className="checkin-row cols-2">
+                <label>Phone*<input name="phone" required value={bookingData.phone} onChange={handleBookingChange} /></label>
+                <label className="date-picker-label">
+                  Appointment Time*
+                  <DatePicker
+                    selected={bookingData.appointmentTime}
+                    onChange={(date) => setBookingData(prev => ({ ...prev, appointmentTime: date }))}
+                    showTimeSelect
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    placeholderText="Select Date & Time"
+                    calendarClassName="compact-calendar" 
+                    className="custom-datepicker" wrapperClassName="date-picker-wrapper"
+                  />
+                </label>
+              </div>
+
+              {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
+              {successMsg && <div className="confirmation" style={{textAlign: 'center', borderColor: '#4ade80'}}>{successMsg}</div>}
+              
+              <div className="form-actions">
+                <button type="submit" disabled={submitting || successMsg}>
+                  {submitting ? 'Booking…' : 'Confirm Booking'}
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+
+        {/* --- VIEW 3: I HAVE AN APPOINTMENT --- */}
+        {activeTab === 'arrived' && (
+          <>
+            <h3 style={{ marginTop: 0 }}>Arrived for Appointment?</h3>
+            <p className="helper-text">Enter your phone number to find your booking for today.</p>
+            
+            {!foundAppointment ? (
+              <form className="form-grid" onSubmit={handleFindAppointment} style={{ maxWidth: '400px', margin: '0 auto' }}>
+                <label>
+                  Registered Phone Number
+                  <input 
+                    value={lookupPhone} 
+                    onChange={(e) => setLookupPhone(e.target.value)} 
+                    placeholder="e.g. 0123456789"
+                    required
+                  />
+                </label>
+                <div className="form-actions">
+                  <button type="submit" disabled={submitting}>Find Booking</button>
+                </div>
+              </form>
+            ) : (
+              <div className="confirmation" style={{ textAlign: 'center', borderColor: '#2dd4bf' }}>
+                <h4>Booking Found!</h4>
+                <p style={{fontSize: '1.2rem', margin: '0.5rem 0'}}>
+                  Welcome, <strong>{foundAppointment.first_name} {foundAppointment.last_name}</strong>
+                </p>
+                <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
                 
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"     
-                calendarClassName="compact-calendar" 
-                className="custom-datepicker"
-                wrapperClassName="date-picker-wrapper"
-              />
-            </label>
-            <label>
-              Phone
-              <input name="phone" value={formData.phone} onChange={handleChange} />
-            </label>
-          </div>
+                <div className="form-actions" style={{ marginTop: '1.5rem' }}>
+                  <button onClick={handleArrivedCheckIn} disabled={submitting}>
+                    {submitting ? 'Checking in...' : 'Yes, Check Me In'}
+                  </button>
+                  <button className="ghost-button" type="button" onClick={() => setFoundAppointment(null)}>Cancel</button>
+                </div>
+              </div>
+            )}
 
-          <div className="checkin-row">
-            <label className="full-width">
-              Symptoms
-              <textarea class="no-resize" name="symptoms" rows="3" value={formData.symptoms} onChange={handleChange} />
-            </label>
-          </div>
+            {error && <p className="error" style={{ textAlign: 'center', marginTop: '1rem' }}>{error}</p>}
+          </>
+        )}
 
-          <div className="checkin-row cols-3">
-            <label>
-              Temperature (°C)
-              <input name="temp" value={formData.temp} onChange={handleChange} />
-            </label>
-            <label>
-              SpO₂ (%)
-              <input name="spo2" value={formData.spo2} onChange={handleChange} />
-            </label>
-            <label>
-              Heart Rate (bpm)
-              <input name="hr" value={formData.hr} onChange={handleChange} />
-            </label>
-          </div>
-
-          {error && <p className="error" style={{textAlign: 'center'}}>{error}</p>}
-          
-          <div className="form-actions">
-            <button type="submit" disabled={submitting}>
-              {submitting ? 'Submitting…' : 'Submit & join queue'}
-            </button>
-          </div>
-          
-        </form>
+        {/* --- CONFIRMATION MODAL (Shared) --- */}
         {confirmation && (
-          <div className="confirmation" style={{ borderColor: 'rgba(124, 58, 237, 0.3)' }}>
+          <div className="confirmation" style={{ marginTop: '2rem', borderColor: 'rgba(124, 58, 237, 0.3)' }}>
             <h3>Queued!</h3>
             <p>Your queue number is <strong>{confirmation.queueNumber}</strong>.</p>
             <p>Estimated wait: <strong>{confirmation.etaMinutes} minutes</strong>.</p>
-            <p>Current queue size: {confirmation.queue?.length || 0} patients.</p>
-            <p className="helper-text">We will show your number on the display next.</p>
+            <p className="helper-text">Redirecting to display board...</p>
           </div>
         )}
       </div>

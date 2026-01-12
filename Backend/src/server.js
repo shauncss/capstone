@@ -13,6 +13,7 @@ const sensorRoutes = require('./routes/sensorRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const pharmacyRoutes = require('./routes/pharmacyRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 const registerSocket = require('./sockets');
 const queueService = require('./services/queueService');
 const pharmacyService = require('./services/pharmacyService');
@@ -99,6 +100,7 @@ app.use('/api', sensorRoutes);
 app.use('/api', paymentRoutes);
 app.use('/api', pharmacyRoutes);
 app.use('/api', adminRoutes);
+app.use('/api', appointmentRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

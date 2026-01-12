@@ -2,8 +2,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 1.25rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25), rgba(6, 182, 212, 0.2));
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(6, 182, 212, 0.18));
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--card-shadow);
   isolation: isolate;
@@ -12,12 +12,12 @@
 .patient-floating-grid {
   position: absolute;
   inset: 0;
-  background-size: 30px 30px;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  mask-image: radial-gradient(70% 70% at 50% 50%, rgba(255, 255, 255, 0.6), transparent);
+  background-size: 26px 26px;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  mask-image: radial-gradient(65% 65% at 50% 50%, rgba(255, 255, 255, 0.65), transparent);
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.55;
   z-index: 0;
 }
 
@@ -59,12 +59,12 @@
 }
 
 .patient-title {
+  font: 1.25rem;
   margin: 0.35rem 0;
-  font-size: 2.2rem;
-  letter-spacing: -0.02em;
-  color: #f8fafc;
   position: relative;
   z-index: 1;
+  font-weight: 600;
+  color: #e2e8f0;
 }
 
 .patient-subtitle {
@@ -155,19 +155,6 @@
   z-index: 1;
 }
 
-/* --- Form Layout (5 Rows) --- */
-.checkin-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: 1rem 0;
-}
-
-.checkin-row {
-  display: grid;
-  gap: 1rem;
-}
-
 .cols-2 { grid-template-columns: 1fr 1fr; }
 .cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 
@@ -182,12 +169,6 @@
   min-width: 200px;
   padding-left: 2rem;
   padding-right: 2rem;
-}
-
-/* TextArea Settings */
-.checkin-form textarea {
-  resize: vertical;
-  overflow-y: auto;
 }
 
 /* Mobile Responsiveness */
@@ -368,4 +349,43 @@
 
 .compact-calendar .react-datepicker__navigation {
   display: none !important;
+}
+
+.patient-nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+}
+
+.nav-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 999px; /* Pill shape */
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: none; /* Reset default button shadow */
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.nav-pill.active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+  font-weight: 600;
+  transform: translateY(-1px);
 }
