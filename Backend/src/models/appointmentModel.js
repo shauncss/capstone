@@ -1,3 +1,4 @@
+// Backend/src/models/appointmentModel.js
 const db = require('../db/knex');
 
 async function createAppointment(appointment) {
@@ -5,26 +6,20 @@ async function createAppointment(appointment) {
   return record;
 }
 
-async function getAppointmentsByDate(dateString) {
-  // Assumes dateString is YYYY-MM-DD
-  // We filter where appointment_time starts with that date
+async function getAppointmentByPhone(phone) {
+  // Finds today's active booking for this phone number
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Note: We use raw SQL for date matching to be safe across different DBs
   return db('appointments')
-    .whereRaw('DATE(appointment_time) = ?', [dateString])
-    .orderBy('appointment_time', 'asc');
+    .where('phone', 'like', `%${phone}%`)
+    .whereRaw('DATE(appointment_time) = ?', [today]) 
+    .where('status', 'booked')
+    .first();
 }
 
 async function getAppointmentById(id) {
   return db('appointments').where({ id }).first();
-}
-
-async function getAppointmentByPhone(phone) {
-  // Helper to find today's appointments by phone for check-in
-  const today = new Date().toISOString().split('T')[0];
-  return db('appointments')
-    .where('phone', 'like', `%${phone}%`)
-    .andWhereRaw('DATE(appointment_time) = ?', [today])
-    .where('status', 'booked') // Only find active bookings
-    .first();
 }
 
 async function updateStatus(id, status) {
@@ -35,10 +30,16 @@ async function updateStatus(id, status) {
   return record;
 }
 
+async function getAppointmentsByDate(dateString) {
+  return db('appointments')
+    .whereRaw('DATE(appointment_time) = ?', [dateString])
+    .orderBy('appointment_time', 'asc');
+}
+
 module.exports = {
   createAppointment,
-  getAppointmentsByDate,
-  getAppointmentById,
   getAppointmentByPhone,
-  updateStatus
+  getAppointmentById,
+  updateStatus,
+  getAppointmentsByDate
 };
