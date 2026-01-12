@@ -16,7 +16,7 @@ async function bookAppointment(req, res, next) {
       last_name: lastName,
       phone,
       appointment_time: appointmentTime,
-      date_of_birth: dateOfBirth, 
+      date_of_birth: dateOfBirth === '' ? null : dateOfBirth,
       symptoms: symptoms,
       status: 'booked'
     });

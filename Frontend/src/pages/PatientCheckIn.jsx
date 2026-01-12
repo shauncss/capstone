@@ -290,6 +290,7 @@ function PatientCheckIn() {
                     
                     placeholderText="Click to select"
                     showTimeSelect
+                    dateFormat="MMMM d, yyyy h:mm aa"
                     showMonthDropdown showYearDropdown dropdownMode="select" 
                     calendarClassName="compact-calendar" 
                     className="custom-datepicker" wrapperClassName="date-picker-wrapper"
