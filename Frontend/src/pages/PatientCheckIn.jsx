@@ -341,7 +341,7 @@ function PatientCheckIn() {
                 </p>
                 <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
 
-                <div className="checkin-row cols-3">
+              <div className="checkin-row cols-3">
                  <label>Temperature (°C)<input name="temp" value={formData.temp} onChange={handleWalkInChange} /></label>
                  <label>SpO₂ (%)<input name="spo2" value={formData.spo2} onChange={handleWalkInChange} /></label>
                  <label>Heart Rate (bpm)<input name="hr" value={formData.hr} onChange={handleWalkInChange} /></label>
