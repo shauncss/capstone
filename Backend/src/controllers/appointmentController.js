@@ -4,7 +4,7 @@ const queueService = require('../services/queueService');
 
 async function bookAppointment(req, res, next) {
   try {
-    const { firstName, lastName, phone, appointmentTime } = req.body;
+    const { firstName, lastName, phone, appointmentTime, dateOfBirth, symptoms } = req.body;
     
     // Validate input
     if (!firstName || !lastName || !appointmentTime) {
@@ -16,6 +16,8 @@ async function bookAppointment(req, res, next) {
       last_name: lastName,
       phone,
       appointment_time: appointmentTime,
+      date_of_birth: dateOfBirth, 
+      symptoms: symptoms,
       status: 'booked'
     });
 
@@ -53,22 +55,23 @@ async function checkInAppointment(req, res, next) {
       return res.status(400).json({ message: 'Appointment already processed' });
     }
 
-    // Convert to live queue
+    const finalSymptoms = symptoms || appointment.symptoms || 'Scheduled Visit';
+
     const queueResult = await queueService.handleCheckIn({
       firstName: appointment.first_name,
       lastName: appointment.last_name,
       phone: appointment.phone,
-      symptoms: symptoms || 'Scheduled Visit',
+      symptoms: finalSymptoms,
       temp,
       spo2,
       hr
     });
 
-    await appointmentModel.updateStatus(id, 'checked_in');
+    await appointmentModel.updateAppointmentCheckIn(id, { temp, spo2, hr });
 
     res.status(201).json({
       message: 'Check-in successful',
-      queueNumber: queueResult.queueNumber, // Ensure this is returned
+      queueNumber: queueResult.queueNumber,
       etaMinutes: queueResult.etaMinutes,
       queue: queueResult.queue
     });

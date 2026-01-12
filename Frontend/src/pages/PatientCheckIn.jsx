@@ -25,7 +25,14 @@ function PatientCheckIn() {
 
   // STATES
   const [formData, setFormData] = useState(initialState);
-  const [bookingData, setBookingData] = useState({ firstName: '', lastName: '', phone: '', appointmentTime: null });
+  const [bookingData, setBookingData] = useState({ 
+  firstName: '', 
+  lastName: '', 
+  phone: '', 
+  appointmentTime: null,
+  dateOfBirth: '',
+  symptoms: ''
+});
   const [lookupPhone, setLookupPhone] = useState('');
   const [foundAppointment, setFoundAppointment] = useState(null);
 
@@ -149,7 +156,7 @@ function PatientCheckIn() {
         <div className="patient-biometrics">
           <div className="patient-neon">
             <div style={{ position: 'relative', zIndex: 1, display: 'grid', gap: '0.35rem' }}>
-              <p className="helper-text">Latest biometrics detected from Kiosk</p>
+              <p className="helper-text">Latest biometrics detected from Kiosk  </p>
               <div className="pill-row">
                 <span className="badge">Temp: {formData.temp || '—'}°C</span>
                 <span className="badge">SpO₂: {formData.spo2 || '—'}%</span>
@@ -258,17 +265,43 @@ function PatientCheckIn() {
                 <label>First Name*<input name="firstName" required value={bookingData.firstName} onChange={handleBookingChange} /></label>
                 <label>Last Name*<input name="lastName" required value={bookingData.lastName} onChange={handleBookingChange} /></label>
                 <label>Phone Number* （01X-XXXXXXX) <input name="phone" required value={bookingData.phone} onChange={handleBookingChange} /></label>
+                
+                <label className="date-picker-label">
+                  Date of Birth
+                  <DatePicker
+                    selected={bookingData.dateOfBirth ? new Date(bookingData.dateOfBirth) : null}
+                    onChange={(date) => {
+                      const formatted = date ? date.toISOString().split('T')[0] : '';
+                      setBookingData(prev => ({ ...prev, dateOfBirth: formatted }));
+                    }}
+                    placeholderText="Click to select"
+                    showMonthDropdown showYearDropdown dropdownMode="select"     
+                    calendarClassName="compact-calendar" 
+                    className="custom-datepicker" wrapperClassName="date-picker-wrapper"
+                  />
+                </label>
+                
                 <label className="date-picker-label">
                   Appointment Time*
                   <DatePicker
                     selected={bookingData.appointmentTime}
                     onChange={(date) => setBookingData(prev => ({ ...prev, appointmentTime: date }))}
                     
-                    placeholderText="Select Date & Time"
+                    placeholderText="Click to select"
                     showTimeSelect
                     showMonthDropdown showYearDropdown dropdownMode="select" 
                     calendarClassName="compact-calendar" 
                     className="custom-datepicker" wrapperClassName="date-picker-wrapper"
+                  />
+                </label>
+
+                <label>
+                  Symptoms
+                  <input 
+                    name="symptoms" 
+                    value={bookingData.symptoms} 
+                    onChange={handleBookingChange} 
+                    placeholder="Reason for visit"
                   />
                 </label>
 
@@ -312,6 +345,30 @@ function PatientCheckIn() {
                   Welcome, <strong>{foundAppointment.first_name} {foundAppointment.last_name}</strong>
                 </p>
                 <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
+
+                <div style={{ marginTop: '1rem', textAlign: 'left' }}>
+                  <p className="helper-text" style={{marginBottom: '0.5rem'}}>Enter Vitals (Optional):</p>
+                  <div className="checkin-row cols-3">
+                    <label>Temp (°C)
+                      <input 
+                        value={formData.temp} 
+                        onChange={(e) => setFormData(prev => ({...prev, temp: e.target.value}))} 
+                      />
+                    </label>
+                    <label>SpO₂ (%)
+                      <input 
+                        value={formData.spo2} 
+                        onChange={(e) => setFormData(prev => ({...prev, spo2: e.target.value}))} 
+                      />
+                    </label>
+                    <label>HR (bpm)
+                      <input 
+                        value={formData.hr} 
+                        onChange={(e) => setFormData(prev => ({...prev, hr: e.target.value}))} 
+                      />
+                    </label>
+                  </div>
+                </div>
                 
                 <div className="form-actions">
                   <button style={{ margin: '1rem' }} onClick={handleArrivedCheckIn} disabled={submitting}>

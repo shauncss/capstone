@@ -36,10 +36,24 @@ async function getAppointmentsByDate(dateString) {
     .orderBy('appointment_time', 'asc');
 }
 
+async function updateAppointmentCheckIn(id, data) {
+  const [record] = await db('appointments')
+    .where({ id })
+    .update({
+      status: 'checked_in',
+      checkin_temp: data.temp,
+      checkin_spo2: data.spo2,
+      checkin_hr: data.hr
+    })
+    .returning('*');
+  return record;
+}
+
 module.exports = {
   createAppointment,
-  getAppointmentByPhone,
+  getAppointmentsByDate,
   getAppointmentById,
+  getAppointmentByPhone,
   updateStatus,
-  getAppointmentsByDate
+  updateAppointmentCheckIn
 };
