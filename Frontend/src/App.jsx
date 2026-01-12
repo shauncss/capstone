@@ -77,7 +77,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>Clinic Self Check-In</h1>
+        <h1>Smart Clinic System</h1>
         <nav>
           <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Patient</Link>
           <Link to="/display" className={location.pathname === '/display' ? 'active' : ''}>Display</Link>

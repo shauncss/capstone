@@ -82,6 +82,9 @@ function PatientCheckIn() {
         : '';
       setSuccessMsg(`Appointment booked on ${timeStr}! \n We'll see you then.`);
       setBookingData({ firstName: '', lastName: '', phone: '', appointmentTime: null });
+      setTimeout(() => {
+        setSuccessMsg('');
+      }, 5000);
     } catch (err) {
       setError(err.response?.data?.message || 'Booking failed');
     } finally {
@@ -142,6 +145,19 @@ function PatientCheckIn() {
       <div className="patient-hero">
         <div className="patient-floating-grid" />
         <h3 className="patient-title">Patient Dashboard - Check Ins and Appointments</h3>
+
+        <div className="patient-biometrics">
+          <div className="patient-neon">
+            <div style={{ position: 'relative', zIndex: 1, display: 'grid', gap: '0.35rem' }}>
+              <p className="helper-text">Latest biometrics detected from Kiosk</p>
+              <div className="pill-row">
+                <span className="badge">Temp: {formData.temp || '—'}°C</span>
+                <span className="badge">SpO₂: {formData.spo2 || '—'}%</span>
+                <span className="badge">HR: {formData.hr || '—'} bpm</span>
+              </div>
+            </div>
+          </div>
+        </div>
         
         {/* NEW NAVIGATION BAR */}
         <div className="patient-nav-row">
@@ -291,17 +307,17 @@ function PatientCheckIn() {
               </form>
             ) : (
               <div className="confirmation" style={{ textAlign: 'center', borderColor: '#2dd4bf' }}>
-                <h4>Booking Found!</h4>
+                <h2>Booking Found!</h2>
                 <p style={{fontSize: '1.2rem', margin: '0.5rem 0'}}>
                   Welcome, <strong>{foundAppointment.first_name} {foundAppointment.last_name}</strong>
                 </p>
                 <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
                 
-                <div className="form-actions" style={{ marginTop: '1.5rem' }}>
-                  <button onClick={handleArrivedCheckIn} disabled={submitting}>
+                <div className="form-actions">
+                  <button style={{ margin: '1rem' }} onClick={handleArrivedCheckIn} disabled={submitting}>
                     {submitting ? 'Checking in...' : 'Yes, Check Me In'}
                   </button>
-                  <button className="ghost-button" type="button" onClick={() => setFoundAppointment(null)}>Cancel</button>
+                  <button style={{ margin: '1rem' }} className="ghost-button" type="button" onClick={() => setFoundAppointment(null)}>Cancel</button>
                 </div>
               </div>
             )}
