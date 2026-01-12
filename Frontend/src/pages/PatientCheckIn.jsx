@@ -295,14 +295,9 @@ function PatientCheckIn() {
                   />
                 </label>
 
-                <label>
+                <label className="full-width">
                   Symptoms
-                  <input 
-                    name="symptoms" 
-                    value={bookingData.symptoms} 
-                    onChange={handleBookingChange} 
-                    placeholder="Reason for visit"
-                  />
+                  <textarea class="no-resize" name="symptoms" rows="4" value={formData.symptoms} onChange={handleWalkInChange} />
                 </label>
 
               {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
@@ -346,29 +341,11 @@ function PatientCheckIn() {
                 </p>
                 <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
 
-                <div style={{ marginTop: '1rem', textAlign: 'left' }}>
-                  <p className="helper-text" style={{marginBottom: '0.5rem'}}>Enter Vitals (Optional):</p>
-                  <div className="checkin-row cols-3">
-                    <label>Temp (°C)
-                      <input 
-                        value={formData.temp} 
-                        onChange={(e) => setFormData(prev => ({...prev, temp: e.target.value}))} 
-                      />
-                    </label>
-                    <label>SpO₂ (%)
-                      <input 
-                        value={formData.spo2} 
-                        onChange={(e) => setFormData(prev => ({...prev, spo2: e.target.value}))} 
-                      />
-                    </label>
-                    <label>HR (bpm)
-                      <input 
-                        value={formData.hr} 
-                        onChange={(e) => setFormData(prev => ({...prev, hr: e.target.value}))} 
-                      />
-                    </label>
-                  </div>
-                </div>
+                <div className="checkin-row cols-3">
+                 <label>Temperature (°C)<input name="temp" value={formData.temp} onChange={handleWalkInChange} /></label>
+                 <label>SpO₂ (%)<input name="spo2" value={formData.spo2} onChange={handleWalkInChange} /></label>
+                 <label>Heart Rate (bpm)<input name="hr" value={formData.hr} onChange={handleWalkInChange} /></label>
+              </div>
                 
                 <div className="form-actions">
                   <button style={{ margin: '1rem' }} onClick={handleArrivedCheckIn} disabled={submitting}>
