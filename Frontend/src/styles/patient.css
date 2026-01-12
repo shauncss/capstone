@@ -464,7 +464,10 @@
   .cols-3 {
     grid-template-columns: 1fr;
   }
-  .patient-lux-card {
-    margin: 0;
+  .patient-lux-card.tab-book {
+  margin: 0;
+  }
+  .patient-lux-card.tab-arrived {
+  margin: 0;
   }
 }
