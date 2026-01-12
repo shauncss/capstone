@@ -144,13 +144,17 @@
   box-shadow: var(--card-shadow);
   z-index: 10;
 }
-
+.patient-lux-card.tab-walkin {
+  padding: 2rem 4rem 1rem 4rem;
+}
 .patient-lux-card.tab-book {
   margin: 0 16rem 0 16rem;
+  padding: 3rem 4rem 2rem 4rem;
 }
 
 .patient-lux-card.tab-arrived {
   margin: 0 16rem 0 16rem;
+  padding: 3rem 4rem 2rem 4rem;
 }
 
 .patient-lux-card .patient-shimmer {

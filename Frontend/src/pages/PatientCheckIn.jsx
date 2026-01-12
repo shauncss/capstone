@@ -35,6 +35,7 @@ function PatientCheckIn() {
 });
   const [lookupPhone, setLookupPhone] = useState('');
   const [foundAppointment, setFoundAppointment] = useState(null);
+  const [arrivedVitals, setArrivedVitals] = useState({ temp: '', spo2: '', hr: '' });
 
   const [submitting, setSubmitting] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
@@ -47,6 +48,7 @@ function PatientCheckIn() {
     const spo2 = searchParams.get('spo2') || '';
     const hr = searchParams.get('hr') || '';
     setFormData((prev) => ({ ...prev, temp, spo2, hr }));
+    setArrivedVitals({ temp, spo2, hr });
   }, [searchParams]);
 
   // --- HANDLERS ---
@@ -120,7 +122,6 @@ function PatientCheckIn() {
     if (!foundAppointment) return;
     setSubmitting(true);
     try {
-      // We pass the current vitals (from URL/Kiosk) to the check-in
       const vitals = {
         temp: formData.temp,
         spo2: formData.spo2,
@@ -319,9 +320,9 @@ function PatientCheckIn() {
             <p className="helper-text">Enter your phone number to find your booking for today.</p>
             
             {!foundAppointment ? (
-              <form className="form-grid" onSubmit={handleFindAppointment} style={{ maxWidth: '400px', margin: '0 auto' }}>
+              <form className="form-grid" onSubmit={handleFindAppointment}>
                 <label>
-                  Registered Phone Number
+                  Registered Phone Number*
                   <input 
                     value={lookupPhone} 
                     onChange={(e) => setLookupPhone(e.target.value)} 
@@ -329,6 +330,10 @@ function PatientCheckIn() {
                     required
                   />
                 </label>
+                <label>Temp (°C)<input value={arrivedVitals.temp} onChange={(e) => setArrivedVitals(prev => ({...prev, temp: e.target.value}))} /></label>
+                <label>SpO₂ (%)<input value={arrivedVitals.spo2} onChange={(e) => setArrivedVitals(prev => ({...prev, spo2: e.target.value}))} /></label>
+                <label>HR (bpm)<input value={arrivedVitals.hr} onChange={(e) => setArrivedVitals(prev => ({...prev, hr: e.target.value}))} /></label>
+
                 <div className="form-actions">
                   <button type="submit" disabled={submitting}>Find Booking</button>
                 </div>
