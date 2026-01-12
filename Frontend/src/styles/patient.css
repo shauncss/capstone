@@ -136,10 +136,19 @@
 
 .patient-lux-card {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   box-shadow: var(--card-shadow);
+  z-index: 10;
+}
+
+.patient-lux-card.tab-book {
+  margin: 0 16rem 0 16rem;
+}
+
+.patient-lux-card.tab-arrived {
+  margin: 0 16rem 0 16rem;
 }
 
 .patient-lux-card .patient-shimmer {
@@ -161,7 +170,7 @@
 .form-actions {
   display: flex;
   justify-content: center;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
 }
 
 .form-actions button {
@@ -170,14 +179,6 @@
   padding-left: 2rem;
   padding-right: 2rem;
 }
-
-/* Mobile Responsiveness */
-@media (max-width: 640px) {
-  .checkin-row { grid-template-columns: 1fr; }
-  .form-actions button { width: 100%; }
-}
-
-/* --- DatePicker Overrides --- */
 
 .date-picker-wrapper { width: 100%; }
 .custom-datepicker {
@@ -351,6 +352,50 @@
   display: none !important;
 }
 
+/* --- Time Picker Styling --- */
+.react-datepicker__time-container {
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  width: 90px !important; /* Adjust width if needed */
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__header {
+  background-color: #0f172a !important; /* Matches main header */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+  padding-top: 0.8rem !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time {
+  background: #1e293b !important; 
+  border-bottom-right-radius: 0.75rem;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item {
+  height: 30px;
+  padding: 5px 10px;
+  color: #cbd5e1; 
+  transition: all 0.2s;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover {
+  background-color: rgba(124, 58, 237, 0.3) !important; /* Purple hover */
+  color: #fff !important;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar {
+  width: 4px;
+}
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
 .patient-nav-row {
   display: flex;
   flex-wrap: wrap;
@@ -388,4 +433,38 @@
   box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
   font-weight: 600;
   transform: translateY(-1px);
+}
+
+.checkin-row {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+}
+
+.cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+}
+
+.confirmation {
+  white-space: pre-wrap; 
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .cols-2, 
+  .cols-3 {
+    grid-template-columns: 1fr;
+  }
+  .patient-lux-card {
+    margin: 0;
+  }
 }

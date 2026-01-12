@@ -77,7 +77,10 @@ function PatientCheckIn() {
     setSuccessMsg('');
     try {
       await bookAppointment(bookingData);
-      setSuccessMsg(`Appointment booked for ${bookingData.firstName}! We'll see you then.`);
+      const timeStr = bookingData.appointmentTime 
+        ? bookingData.appointmentTime.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) 
+        : '';
+      setSuccessMsg(`Appointment booked on ${timeStr}! \n We'll see you then.`);
       setBookingData({ firstName: '', lastName: '', phone: '', appointmentTime: null });
     } catch (err) {
       setError(err.response?.data?.message || 'Booking failed');
@@ -167,7 +170,7 @@ function PatientCheckIn() {
         </div>
       </div>
 
-      <div className="card patient-lux-card">
+      <div className={`card patient-lux-card tab-${activeTab}`}>
         <div className="patient-shimmer" />
 
         {/* --- VIEW 1: SELF CHECK-IN (WALK-IN) --- */}
@@ -188,6 +191,10 @@ function PatientCheckIn() {
               </div>
 
               <div className="checkin-row cols-2">
+                <label>
+                  Phone Number* （01X-XXXXXXX)
+                  <input name="phone" required value={formData.phone} onChange={handleWalkInChange} />
+                </label>
                 <label className="date-picker-label">
                   Date of Birth
                   <DatePicker
@@ -202,18 +209,12 @@ function PatientCheckIn() {
                     className="custom-datepicker" wrapperClassName="date-picker-wrapper"
                   />
                 </label>
-                <label>
-                  Phone
-                  <input name="phone" value={formData.phone} onChange={handleWalkInChange} />
-                </label>
               </div>
 
-              <div className="checkin-row">
                 <label className="full-width">
                   Symptoms
                   <textarea class="no-resize" name="symptoms" rows="3" value={formData.symptoms} onChange={handleWalkInChange} />
                 </label>
-              </div>
               
               {/* Biometrics Display */}
               <div className="checkin-row cols-3">
@@ -238,25 +239,22 @@ function PatientCheckIn() {
             <h3 style={{ marginTop: 0 }}>Book a Future Visit</h3>
             <p className="helper-text">Secure your slot for a future date.</p>
             <form className="form-grid" onSubmit={handleBookSubmit}>
-              <div className="checkin-row cols-2">
                 <label>First Name*<input name="firstName" required value={bookingData.firstName} onChange={handleBookingChange} /></label>
                 <label>Last Name*<input name="lastName" required value={bookingData.lastName} onChange={handleBookingChange} /></label>
-              </div>
-              <div className="checkin-row cols-2">
-                <label>Phone*<input name="phone" required value={bookingData.phone} onChange={handleBookingChange} /></label>
+                <label>Phone Number* （01X-XXXXXXX) <input name="phone" required value={bookingData.phone} onChange={handleBookingChange} /></label>
                 <label className="date-picker-label">
                   Appointment Time*
                   <DatePicker
                     selected={bookingData.appointmentTime}
                     onChange={(date) => setBookingData(prev => ({ ...prev, appointmentTime: date }))}
-                    showTimeSelect
-                    dateFormat="MMMM d, yyyy h:mm aa"
+                    
                     placeholderText="Select Date & Time"
+                    showTimeSelect
+                    showMonthDropdown showYearDropdown dropdownMode="select" 
                     calendarClassName="compact-calendar" 
                     className="custom-datepicker" wrapperClassName="date-picker-wrapper"
                   />
                 </label>
-              </div>
 
               {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
               {successMsg && <div className="confirmation" style={{textAlign: 'center', borderColor: '#4ade80'}}>{successMsg}</div>}
