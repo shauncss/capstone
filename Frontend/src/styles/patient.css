@@ -502,10 +502,16 @@
   .cols-3 {
     grid-template-columns: 1fr;
   }
+  .patient-lux-card.tab-walkin {
+  padding: 2rem;
+  margin: 0;
+  }
   .patient-lux-card.tab-book {
+  padding: 2rem;
   margin: 0;
   }
   .patient-lux-card.tab-arrived {
+  padding: 2rem;
   margin: 0;
   }
   .patient-neon {

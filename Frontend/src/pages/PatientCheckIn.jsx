@@ -322,11 +322,10 @@ function PatientCheckIn() {
             {!foundAppointment ? (
               <form className="form-grid" onSubmit={handleFindAppointment}>
                 <label>
-                  Registered Phone Number*
+                  Registered Phone Number* （01X-XXXXXXX)
                   <input 
                     value={lookupPhone} 
                     onChange={(e) => setLookupPhone(e.target.value)} 
-                    placeholder="e.g. 0123456789"
                     required
                   />
                 </label>
@@ -345,12 +344,6 @@ function PatientCheckIn() {
                   Welcome, <strong>{foundAppointment.first_name} {foundAppointment.last_name}</strong>
                 </p>
                 <p className="helper-text">Scheduled for: {new Date(foundAppointment.appointment_time).toLocaleTimeString()}</p>
-
-              <div className="checkin-row cols-3">
-                 <label>Temperature (°C)<input name="temp" value={formData.temp} onChange={handleWalkInChange} /></label>
-                 <label>SpO₂ (%)<input name="spo2" value={formData.spo2} onChange={handleWalkInChange} /></label>
-                 <label>Heart Rate (bpm)<input name="hr" value={formData.hr} onChange={handleWalkInChange} /></label>
-              </div>
                 
                 <div className="form-actions">
                   <button style={{ margin: '1rem' }} onClick={handleArrivedCheckIn} disabled={submitting}>
