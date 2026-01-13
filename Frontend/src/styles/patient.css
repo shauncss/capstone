@@ -498,8 +498,7 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
-  .cols-2, 
-  .cols-3 {
+  .cols-2, .cols-3 {
     grid-template-columns: 1fr;
   }
   .patient-lux-card.tab-walkin {

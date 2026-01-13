@@ -123,9 +123,9 @@ function PatientCheckIn() {
     setSubmitting(true);
     try {
       const vitals = {
-        temp: arrivedVitals.temp,
-        spo2: arrivedVitals.spo2,
-        hr: arrivedVitals.hr,
+        temp: formData.temp,
+        spo2: formData.spo2,
+        hr: formData.hr,
         symptoms: 'Scheduled Visit'
       };
       const { data } = await checkInAppointment(foundAppointment.id, vitals);
