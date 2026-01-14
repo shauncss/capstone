@@ -126,7 +126,6 @@ function PatientCheckIn() {
         temp: formData.temp,
         spo2: formData.spo2,
         hr: formData.hr,
-        symptoms: 'Scheduled Visit'
       };
       const { data } = await checkInAppointment(foundAppointment.id, vitals);
       setConfirmation(data);

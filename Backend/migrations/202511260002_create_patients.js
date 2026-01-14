@@ -7,7 +7,6 @@ exports.up = function (knex) {
     table.string('phone');
     table.text('symptoms');
     table.string('queue_number').notNullable().unique();
-    table.integer('room_id').references('id').inTable('rooms').onDelete('SET NULL');
     table.decimal('temp', 4, 1).nullable();
     table.integer('spo2').nullable();
     table.integer('hr').nullable();

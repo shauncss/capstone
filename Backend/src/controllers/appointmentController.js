@@ -1,4 +1,3 @@
-// Backend/src/controllers/appointmentController.js
 const appointmentModel = require('../models/appointmentModel');
 const queueService = require('../services/queueService');
 
@@ -6,7 +5,6 @@ async function bookAppointment(req, res, next) {
   try {
     const { firstName, lastName, phone, appointmentTime, dateOfBirth, symptoms } = req.body;
     
-    // Validate input
     if (!firstName || !lastName || !appointmentTime) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -16,7 +14,7 @@ async function bookAppointment(req, res, next) {
       last_name: lastName,
       phone,
       appointment_time: appointmentTime,
-      date_of_birth: dateOfBirth === '' ? null : dateOfBirth,
+      date_of_birth: dateOfBirth || null,
       symptoms: symptoms,
       status: 'booked'
     });
@@ -55,11 +53,12 @@ async function checkInAppointment(req, res, next) {
       return res.status(400).json({ message: 'Appointment already processed' });
     }
 
-    const finalSymptoms = symptoms || appointment.symptoms || 'Scheduled Visit';
+    const finalSymptoms = symptoms || appointment.symptoms || null;
 
     const queueResult = await queueService.handleCheckIn({
       firstName: appointment.first_name,
       lastName: appointment.last_name,
+      dateOfBirth: appointment.date_of_birth,
       phone: appointment.phone,
       symptoms: finalSymptoms,
       temp,

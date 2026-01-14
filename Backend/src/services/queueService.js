@@ -35,14 +35,10 @@ async function handleCheckIn({
   
   const queueLength = await queueModel.getQueueLength();
 
-  // --- CHANGED LOGIC START ---
-  // 1. Get the last created queue entry from DB
+
   const lastEntry = await queueModel.getLastQueueEntry();
-  // 2. Extract the number string (or null if DB is empty)
   const lastQueueNumber = lastEntry ? lastEntry.queue_number : null;
-  // 3. Generate the next number
   const queueNumber = generateNextQueueNumber(lastQueueNumber);
-  // --- CHANGED LOGIC END ---
 
   const etaMinutes = calculateEta(queueLength);
 
@@ -88,9 +84,6 @@ async function assignRoomToQueue(queueId, roomId) {
   if (!queueRecord) {
     throw new Error('Queue entry not found');
   }
-  if (queueRecord?.patient_id) {
-    await patientModel.updatePatient(queueRecord.patient_id, { room_id: roomId });
-  }
   const room = await roomModel.updateRoom(roomId, {
     current_patient_id: queueRecord?.patient_id || null,
     is_available: false
@@ -106,9 +99,6 @@ async function finishRoom(roomId) {
   const activeQueue = await queueModel.getActiveQueueByRoom(roomId);
   if (activeQueue) {
     const completed = await queueModel.completeQueueEntry(activeQueue.id);
-    if (activeQueue.patient_id) {
-      await patientModel.updatePatient(activeQueue.patient_id, { room_id: null });
-    }
     await paymentService.enqueueFromQueueRecord(completed);
   }
 
@@ -119,7 +109,6 @@ async function finishRoom(roomId) {
 
   await broadcastQueue();
   await broadcastRooms();
-  await pharmacyService.broadcastPharmacyQueue();
 
   return { room, finishedQueueId: activeQueue?.id || null };
 }
