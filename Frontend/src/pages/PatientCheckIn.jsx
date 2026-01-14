@@ -51,7 +51,7 @@ function PatientCheckIn() {
     setArrivedVitals({ temp, spo2, hr });
   }, [searchParams]);
 
-  // --- HANDLERS ---
+  // HANDLERS
   const handleWalkInChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -123,9 +123,9 @@ function PatientCheckIn() {
     setSubmitting(true);
     try {
       const vitals = {
-        temp: formData.temp,
-        spo2: formData.spo2,
-        hr: formData.hr,
+        temp: arrivedVitals.temp,
+        spo2: arrivedVitals.spo2,
+        hr: arrivedVitals.hr,
       };
       const { data } = await checkInAppointment(foundAppointment.id, vitals);
       setConfirmation(data);
@@ -166,7 +166,7 @@ function PatientCheckIn() {
           </div>
         </div>
         
-        {/* NEW NAVIGATION BAR */}
+        {/* NAVIGATION BAR */}
         <div className="patient-nav-row">
           <div
             className={`nav-pill ${activeTab === 'walkin' ? 'active' : ''}`}
@@ -196,7 +196,7 @@ function PatientCheckIn() {
       <div className={`card patient-lux-card tab-${activeTab}`}>
         <div className="patient-shimmer" />
 
-        {/* --- VIEW 1: SELF CHECK-IN (WALK-IN) --- */}
+        {/* TAB 1: SELF CHECK-IN (WALK-IN) */}
         {activeTab === 'walkin' && (
           <>
             <h3 style={{ marginTop: 0 }}>Self Check-in Form</h3>
@@ -239,7 +239,6 @@ function PatientCheckIn() {
                   <textarea class="no-resize" name="symptoms" rows="3" value={formData.symptoms} onChange={handleWalkInChange} />
                 </label>
               
-              {/* Biometrics Display */}
               <div className="checkin-row cols-3">
                  <label>Temperature (°C)<input name="temp" value={formData.temp} onChange={handleWalkInChange} /></label>
                  <label>SpO₂ (%)<input name="spo2" value={formData.spo2} onChange={handleWalkInChange} /></label>
@@ -256,7 +255,7 @@ function PatientCheckIn() {
           </>
         )}
 
-        {/* --- VIEW 2: MAKE APPOINTMENT --- */}
+        {/* TAB 2: MAKE APPOINTMENT */}
         {activeTab === 'book' && (
           <>
             <h3 style={{ marginTop: 0 }}>Book a Future Visit</h3>
@@ -298,7 +297,7 @@ function PatientCheckIn() {
 
                 <label className="full-width">
                   Symptoms
-                  <textarea class="no-resize" name="symptoms" rows="4" value={formData.symptoms} onChange={handleWalkInChange} />
+                  <textarea class="no-resize" name="symptoms" rows="4" value={bookingData.symptoms} onChange={handleBookingChange} />
                 </label>
 
               {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
@@ -313,7 +312,7 @@ function PatientCheckIn() {
           </>
         )}
 
-        {/* --- VIEW 3: I HAVE AN APPOINTMENT --- */}
+        {/* TAB 3: I HAVE AN APPOINTMENT */}
         {activeTab === 'arrived' && (
           <>
             <h3 style={{ marginTop: 0 }}>Arrived for Appointment?</h3>
@@ -358,7 +357,7 @@ function PatientCheckIn() {
           </>
         )}
 
-        {/* --- CONFIRMATION MODAL (Shared) --- */}
+        {/* CONFIRMATION MSG */}
         {confirmation && (
           <div className="confirmation" style={{ marginTop: '2rem', borderColor: 'rgba(124, 58, 237, 0.3)' }}>
             <h3>Queued!</h3>
