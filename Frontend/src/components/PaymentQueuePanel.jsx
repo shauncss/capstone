@@ -10,7 +10,7 @@ function PaymentQueuePanel({
 
   return (
     <>
-      {/* --- CARD 1: NOW SERVING --- */}
+      {/*CARD 1: NOW SERVING*/}
       <div className="card">
         <div className="card-header">
           <div>

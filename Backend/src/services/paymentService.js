@@ -36,7 +36,7 @@ async function callNextPatient() {
 }
 
 async function completePatient(id) {
-  // 1. Mark Payment as Complete
+  // 1. Mark payment as complete
   const updated = await paymentQueueModel.markComplete(id);
   if (!updated) {
     const error = new Error('Payment queue entry not found');
@@ -44,8 +44,7 @@ async function completePatient(id) {
     throw error;
   }
   
-  // 2. MOVE TO PHARMACY QUEUE AUTOMATICALLY
-  // We pass the payment record structure which has the same queue_id/patient_id fields
+  // 2. Move to pharmacy queue
   await pharmacyService.enqueueFromQueueRecord({
     id: updated.queue_id,
     patient_id: updated.patient_id,

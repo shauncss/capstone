@@ -35,6 +35,7 @@ async function callNextPatient() {
   return updated;
 }
 
+// Mark pharmacy as complete
 async function completePatient(id) {
   const updated = await pharmacyQueueModel.markComplete(id);
   if (!updated) {

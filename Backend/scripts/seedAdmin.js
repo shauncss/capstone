@@ -1,8 +1,3 @@
-#!/usr/bin/env node
-/*
-  Seed or update an admin user.
-  Usage: node scripts/seedAdmin.js --username <username> --password <password>
-*/
 const path = require('path');
 const dotenvPath = path.join(__dirname, '..', '.env');
 require('dotenv').config({ path: dotenvPath });

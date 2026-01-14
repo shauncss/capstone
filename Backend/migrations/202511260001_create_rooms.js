@@ -8,7 +8,6 @@ exports.up = function (knex) {
     table.timestamp('updated_at').defaultTo(knex.fn.now());
   })
   .then(function () {
-    // fix to 2 rooms
     return knex('rooms').insert([
       { id: 1, name: 'Consultation Room 1', is_available: true },
       { id: 2, name: 'Consultation Room 2', is_available: true }
