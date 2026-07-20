@@ -1,13 +1,16 @@
 # Smart Appointment and Queue Management System
 
-A complete IoT-enabled smart clinic system designed to automate patient registration, capture biometric vitals via edge devices, and manage real-time queues. 
-
-This repository contains the full-stack web platform (React, Node.js, PostgreSQL) alongside the Python-based GUI and inference stack for the Raspberry Pi edge device.
+* **Complete IoT-enabled smart clinic system** including automated patient registration, biometric vital capture, and real-time queue management
+* **Built with React, Node.js, and PostgreSQL**, providing a seamless full-stack web platform alongside Raspberry Pi and ESP32 edge devices
+* **Supports advanced data flow mechanics** including real-time WebSocket synchronization, dynamic queue calculations, and QR code handoff from physical kiosks to smartphones
+* **Provides dedicated web interfaces** including a patient check-in portal, an admin control dashboard for staff, and a live waiting room display board
+* **Integrates custom hardware and AI** including vital sensors (MAX30102, MLX90614) and YOLOv8 computer vision models for automated, contactless patient intake
 
 ## System Architecture
 * **Frontend:** React + Vite, Axios, React Router, Socket.io-client
 * **Backend:** Node.js, Express, PostgreSQL (via Knex.js), Socket.io
 * **Edge (Raspberry Pi):** Python 3, OpenCV, Ultralytics YOLO, Adafruit MLX90614 (Sensors)
+* **Edge (ESP32):** C++, Wi-Fi/WebSocket polling, LCD displays
 
 ---
 
